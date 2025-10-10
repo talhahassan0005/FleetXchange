@@ -1,0 +1,94 @@
+sequenceDiagram
+    participant C as Client
+    participant A as API Gateway
+    participant AS as AuthService
+    participant LS as LoadService
+    participant BS as BidService
+    participant DS as DocumentService
+    participant NS as NotificationService
+    participant WS as WebSocketService
+    participant DB as Database
+    participant S3 as File Storage
+
+    Note over C,S3: User Registration & Authentication
+    C->>A: POST /api/auth/register
+    A->>AS: register(userData)
+    AS->>DB: INSERT user, profile
+    AS->>NS: createWelcomeNotification()
+    AS-->>C: 201 Created {user, tokens}
+
+    Note over C,S3: User Login
+    C->>A: POST /api/auth/login
+    A->>AS: login(email, password)
+    AS->>DB: SELECT user WHERE email
+    AS->>AS: validatePassword()
+    AS->>AS: generateTokens()
+    AS->>DB: UPDATE lastLogin, refreshToken
+    AS-->>C: 200 OK {user, accessToken, refreshToken}
+
+    Note over C,S3: WebSocket Connection
+    C->>WS: connect with JWT
+    WS->>AS: validateToken()
+    WS->>WS: joinRoom(userId)
+    WS-->>C: connection established
+
+    Note over C,S3: Load Creation
+    C->>A: POST /api/loads (JWT)
+    A->>AS: validateToken()
+    A->>LS: createLoad(loadData)
+    LS->>DB: INSERT load
+    LS->>NS: notifyTransporters()
+    NS->>WS: broadcastToRoom('transporters', 'new_load')
+    LS-->>C: 201 Created {load}
+
+    Note over C,S3: Document Upload
+    C->>A: POST /api/documents (multipart)
+    A->>AS: validateToken()
+    A->>DS: uploadDocument(file, metadata)
+    DS->>S3: PUT file
+    DS->>DB: INSERT document record
+    DS->>NS: notifyAdmins('document_uploaded')
+    DS-->>C: 201 Created {document}
+
+    Note over C,S3: Bid Creation
+    C->>A: POST /api/bids
+    A->>AS: validateToken()
+    A->>BS: createBid(bidData)
+    BS->>DB: INSERT bid
+    BS->>LS: getLoad(loadId)
+    BS->>NS: notifyClient('new_bid')
+    NS->>WS: sendToUser(clientId, 'new_bid')
+    BS-->>C: 201 Created {bid}
+
+    Note over C,S3: Bid Acceptance
+    C->>A: PUT /api/bids/:id/accept
+    A->>AS: validateToken()
+    A->>BS: acceptBid(bidId)
+    BS->>DB: UPDATE bid status = 'accepted'
+    BS->>DB: UPDATE other bids status = 'rejected'
+    BS->>LS: assignLoad(loadId, transporterId)
+    BS->>NS: notifyWinner(), notifyLosers()
+    NS->>WS: sendToUser(winnerId, 'bid_accepted')
+    NS->>WS: sendToUser(loserId, 'bid_rejected')
+    BS-->>C: 200 OK {bid}
+
+    Note over C,S3: Real-time Notifications
+    loop Continuous
+        NS->>WS: sendToUser(userId, notification)
+        WS->>C: emit('notification', data)
+    end
+
+    Note over C,S3: Document Verification
+    C->>A: PUT /api/documents/:id/verify
+    A->>AS: validateToken() [admin only]
+    A->>DS: verifyDocument(id, status, notes)
+    DS->>DB: UPDATE document verification
+    DS->>NS: notifyUser('document_verified')
+    DS-->>C: 200 OK {document}
+
+    Note over C,S3: Statistics Dashboard
+    C->>A: GET /api/admin/statistics
+    A->>AS: validateToken() [admin only]
+    A->>DB: Complex aggregation queries
+    DB-->>A: Statistics data
+    A-->>C: 200 OK {statistics}

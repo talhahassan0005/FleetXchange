@@ -1,0 +1,45 @@
+$ cp "/workspace/uploads/FleetXchange Client Onboarding Form (1).pdf" "public/forms/FleetXchange Client Onboarding Form.pdf"
+cp: cannot create regular file 'public/forms/FleetXchange Client Onboarding Form.pdf': No such file or directory
+$ cp "/workspace/uploads/FleetXchange Transporter Onboarding Form (1).pdf" "public/forms/FleetXchange Transporter Onboarding Form.pdf"
+
+cp: cannot create regular file 'public/forms/FleetXchange Transporter Onboarding Form.pdf': No such file or directory
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 2527 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-Dcd_RcNN.css   68.51 kB │ gzip:  11.77 kB
+dist/assets/index-CD90Ff_A.js   895.84 kB │ gzip: 252.52 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.37s
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 2527 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-Dcd_RcNN.css   68.51 kB │ gzip:  11.77 kB
+dist/assets/index-CrSosElM.js   891.23 kB │ gzip: 251.50 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.26s

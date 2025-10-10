@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetXchange Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 FleetXchange Test Page</h1>
+        <div id="status"></div>
+        <p>Testing server connections...</p>
+        <a href="http://localhost:5173" class="btn">Open Main App</a>
+        <a href="http://localhost:5000/health" class="btn">Test Backend API</a>
+    </div>
+
+    <script>
+        async function testConnections() {
+            const statusDiv = document.getElementById('status');
+            
+            // Test Backend
+            try {
+                const backendResponse = await fetch('http://localhost:5000/health');
+                if (backendResponse.ok) {
+                    statusDiv.innerHTML += '<div class="status success">✅ Backend Server: RUNNING</div>';
+                } else {
+                    statusDiv.innerHTML += '<div class="status error">❌ Backend Server: ERROR</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML += '<div class="status error">❌ Backend Server: NOT CONNECTED</div>';
+            }
+            
+            // Test Frontend
+            try {
+                const frontendResponse = await fetch('http://localhost:5173');
+                if (frontendResponse.ok) {
+                    statusDiv.innerHTML += '<div class="status success">✅ Frontend Server: RUNNING</div>';
+                } else {
+                    statusDiv.innerHTML += '<div class="status error">❌ Frontend Server: ERROR</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML += '<div class="status error">❌ Frontend Server: NOT CONNECTED</div>';
+            }
+        }
+        
+        testConnections();
+    </script>
+</body>
+</html>

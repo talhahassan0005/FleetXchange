@@ -1,0 +1,67 @@
+$ pnpm run lint
+
+> shadcnui@ lint /workspace/shadcn-ui
+> eslint --quiet ./src
+
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 117 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-DvO8UNt8.css   58.69 kB │ gzip:  10.31 kB
+dist/assets/index-mHNTDgoc.js   330.96 kB │ gzip: 105.11 kB
+✓ built in 3.68s
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 73 modules transformed.
+x Build failed in 1.95s
+error during build:
+[vite:load-fallback] Could not load /workspace/shadcn-ui/src/lib/auth (imported by src/pages/Index.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/lib/auth'
+Error: Could not load /workspace/shadcn-ui/src/lib/auth (imported by src/pages/Index.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/lib/auth'
+ ELIFECYCLE  Command failed with exit code 1.
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 118 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-5h_F0c6o.css   58.07 kB │ gzip:  10.21 kB
+dist/assets/index-LgxfC9z8.js   338.24 kB │ gzip: 107.19 kB
+✓ built in 3.69s
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 12 modules transformed.
+x Build failed in 1.42s
+error during build:
+Could not resolve "./pages/Login" from "src/App.tsx"
+file: /workspace/shadcn-ui/src/App.tsx
+    at getRollupError (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.handleInvalidResolvedId (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:21442:24)
+    at file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:21402:26
+ ELIFECYCLE  Command failed with exit code 1.

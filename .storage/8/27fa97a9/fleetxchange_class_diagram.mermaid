@@ -1,0 +1,277 @@
+classDiagram
+    class User {
+        +id: string
+        +email: string
+        +password_hash: string
+        +role: UserRole
+        +status: UserStatus
+        +created_at: DateTime
+        +updated_at: DateTime
+        +last_login: DateTime
+        +email_verified: boolean
+        +phone: string
+        +phone_verified: boolean
+        +profile_id: string
+        +authenticate(password: string) boolean
+        +updateLastLogin() void
+        +verifyEmail() void
+        +verifyPhone() void
+    }
+
+    class UserProfile {
+        +id: string
+        +user_id: string
+        +first_name: string
+        +last_name: string
+        +company_name: string
+        +company_registration: string
+        +address: Address
+        +contact_person: string
+        +tax_number: string
+        +created_at: DateTime
+        +updated_at: DateTime
+        +updateProfile(data: ProfileData) void
+        +getFullName() string
+    }
+
+    class Document {
+        +id: string
+        +user_id: string
+        +document_type: DocumentType
+        +file_path: string
+        +file_name: string
+        +file_size: number
+        +mime_type: string
+        +status: DocumentStatus
+        +uploaded_at: DateTime
+        +verified_at: DateTime
+        +verified_by: string
+        +expiry_date: DateTime
+        +notes: string
+        +uploadDocument(file: File) void
+        +verifyDocument(admin_id: string) void
+        +rejectDocument(admin_id: string, reason: string) void
+        +isExpired() boolean
+    }
+
+    class Load {
+        +id: string
+        +client_id: string
+        +title: string
+        +description: string
+        +cargo_type: string
+        +weight: number
+        +volume: number
+        +pickup_location: Location
+        +delivery_location: Location
+        +pickup_date: DateTime
+        +delivery_date: DateTime
+        +budget_min: number
+        +budget_max: number
+        +status: LoadStatus
+        +requirements: string[]
+        +created_at: DateTime
+        +updated_at: DateTime
+        +assigned_transporter_id: string
+        +assigned_bid_id: string
+        +createLoad(data: LoadData) void
+        +updateStatus(status: LoadStatus) void
+        +assignTransporter(transporter_id: string, bid_id: string) void
+        +calculateDistance() number
+    }
+
+    class Bid {
+        +id: string
+        +load_id: string
+        +transporter_id: string
+        +truck_id: string
+        +driver_id: string
+        +price: number
+        +currency: string
+        +estimated_pickup: DateTime
+        +estimated_delivery: DateTime
+        +notes: string
+        +status: BidStatus
+        +created_at: DateTime
+        +updated_at: DateTime
+        +expires_at: DateTime
+        +submitBid(data: BidData) void
+        +acceptBid() void
+        +rejectBid() void
+        +withdrawBid() void
+        +isExpired() boolean
+    }
+
+    class Truck {
+        +id: string
+        +transporter_id: string
+        +license_plate: string
+        +truck_type: string
+        +max_weight: number
+        +max_volume: number
+        +year: number
+        +make: string
+        +model: string
+        +status: TruckStatus
+        +current_location: Location
+        +availability_start: DateTime
+        +availability_end: DateTime
+        +created_at: DateTime
+        +updated_at: DateTime
+        +registerTruck(data: TruckData) void
+        +updateLocation(location: Location) void
+        +setAvailability(start: DateTime, end: DateTime) void
+        +isAvailable(date: DateTime) boolean
+    }
+
+    class Driver {
+        +id: string
+        +transporter_id: string
+        +license_number: string
+        +first_name: string
+        +last_name: string
+        +phone: string
+        +email: string
+        +license_expiry: DateTime
+        +medical_cert_expiry: DateTime
+        +status: DriverStatus
+        +current_truck_id: string
+        +created_at: DateTime
+        +updated_at: DateTime
+        +registerDriver(data: DriverData) void
+        +assignToTruck(truck_id: string) void
+        +updateStatus(status: DriverStatus) void
+        +isLicenseValid() boolean
+        +isMedicalCertValid() boolean
+    }
+
+    class Message {
+        +id: string
+        +load_id: string
+        +sender_id: string
+        +receiver_id: string
+        +content: string
+        +message_type: MessageType
+        +attachments: string[]
+        +sent_at: DateTime
+        +read_at: DateTime
+        +thread_id: string
+        +sendMessage(data: MessageData) void
+        +markAsRead() void
+        +addAttachment(file_path: string) void
+    }
+
+    class Notification {
+        +id: string
+        +user_id: string
+        +title: string
+        +message: string
+        +type: NotificationType
+        +data: JSON
+        +read: boolean
+        +created_at: DateTime
+        +read_at: DateTime
+        +createNotification(data: NotificationData) void
+        +markAsRead() void
+        +sendEmail() void
+        +sendSMS() void
+    }
+
+    class AuditLog {
+        +id: string
+        +user_id: string
+        +action: string
+        +entity_type: string
+        +entity_id: string
+        +old_values: JSON
+        +new_values: JSON
+        +ip_address: string
+        +user_agent: string
+        +timestamp: DateTime
+        +logAction(data: AuditData) void
+        +getEntityHistory(entity_id: string) AuditLog[]
+    }
+
+    class AuthService {
+        +register(userData: RegisterData) Promise~User~
+        +login(email: string, password: string) Promise~AuthResult~
+        +logout(userId: string) Promise~void~
+        +refreshToken(token: string) Promise~string~
+        +resetPassword(email: string) Promise~void~
+        +verifyEmail(token: string) Promise~boolean~
+        +changePassword(userId: string, oldPassword: string, newPassword: string) Promise~boolean~
+    }
+
+    class DocumentService {
+        +uploadDocument(userId: string, file: File, documentType: DocumentType) Promise~Document~
+        +verifyDocument(documentId: string, adminId: string) Promise~Document~
+        +rejectDocument(documentId: string, adminId: string, reason: string) Promise~Document~
+        +getDocumentsByUser(userId: string) Promise~Document[]~
+        +getDocumentsByStatus(status: DocumentStatus) Promise~Document[]~
+        +deleteDocument(documentId: string) Promise~void~
+    }
+
+    class LoadService {
+        +createLoad(clientId: string, loadData: LoadData) Promise~Load~
+        +updateLoad(loadId: string, updateData: Partial~LoadData~) Promise~Load~
+        +deleteLoad(loadId: string) Promise~void~
+        +getLoadById(loadId: string) Promise~Load~
+        +getLoadsByClient(clientId: string) Promise~Load[]~
+        +getAvailableLoads(transporterId: string) Promise~Load[]~
+        +searchLoads(criteria: SearchCriteria) Promise~Load[]~
+        +assignLoad(loadId: string, bidId: string) Promise~Load~
+    }
+
+    class BidService {
+        +submitBid(bidData: BidData) Promise~Bid~
+        +updateBid(bidId: string, updateData: Partial~BidData~) Promise~Bid~
+        +withdrawBid(bidId: string) Promise~void~
+        +acceptBid(bidId: string) Promise~Bid~
+        +rejectBid(bidId: string) Promise~Bid~
+        +getBidsByLoad(loadId: string) Promise~Bid[]~
+        +getBidsByTransporter(transporterId: string) Promise~Bid[]~
+        +getWonBids(transporterId: string) Promise~Bid[]~
+    }
+
+    class MessageService {
+        +sendMessage(messageData: MessageData) Promise~Message~
+        +getMessages(loadId: string, userId: string) Promise~Message[]~
+        +markAsRead(messageId: string) Promise~void~
+        +getUnreadCount(userId: string) Promise~number~
+        +createThread(loadId: string, participants: string[]) Promise~string~
+    }
+
+    class NotificationService {
+        +createNotification(notificationData: NotificationData) Promise~Notification~
+        +getNotifications(userId: string) Promise~Notification[]~
+        +markAsRead(notificationId: string) Promise~void~
+        +markAllAsRead(userId: string) Promise~void~
+        +sendEmailNotification(userId: string, template: string, data: any) Promise~void~
+        +sendSMSNotification(userId: string, message: string) Promise~void~
+    }
+
+    %% Relationships
+    User ||--|| UserProfile : has
+    User ||--o{ Document : uploads
+    User ||--o{ Load : posts
+    User ||--o{ Bid : submits
+    User ||--o{ Truck : owns
+    User ||--o{ Driver : employs
+    User ||--o{ Message : sends
+    User ||--o{ Notification : receives
+    User ||--o{ AuditLog : generates
+    
+    Load ||--o{ Bid : receives
+    Load ||--o{ Message : discusses
+    
+    Bid }o--|| Truck : uses
+    Bid }o--|| Driver : assigns
+    
+    Truck }o--|| Driver : operated_by
+    
+    AuthService ..> User : manages
+    DocumentService ..> Document : manages
+    LoadService ..> Load : manages
+    BidService ..> Bid : manages
+    MessageService ..> Message : manages
+    NotificationService ..> Notification : manages

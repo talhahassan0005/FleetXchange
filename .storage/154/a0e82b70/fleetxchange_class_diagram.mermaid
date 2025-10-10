@@ -1,0 +1,175 @@
+classDiagram
+    class User {
+        +UUID id
+        +String email
+        +String passwordHash
+        +UserType userType
+        +UserStatus status
+        +UserProfile profile
+        +DateTime createdAt
+        +DateTime updatedAt
+        +DateTime lastLogin
+        +String refreshToken
+        +validatePassword(password: String) Boolean
+        +generateTokens() TokenPair
+        +updateLastLogin() void
+    }
+
+    class UserProfile {
+        +UUID userId
+        +String companyName
+        +String contactPerson
+        +String phone
+        +String address
+        +String businessRegistration
+        +String taxId
+        +Boolean isVerified
+        +DateTime verifiedAt
+    }
+
+    class Load {
+        +UUID id
+        +UUID clientId
+        +String title
+        +String description
+        +CargoType cargoType
+        +Decimal weight
+        +String pickupLocation
+        +String deliveryLocation
+        +DateTime pickupDate
+        +DateTime deliveryDate
+        +Decimal budgetMin
+        +Decimal budgetMax
+        +LoadStatus status
+        +UUID assignedTransporterId
+        +DateTime createdAt
+        +DateTime updatedAt
+        +getBids() Bid[]
+        +assignToTransporter(transporterId: UUID) void
+        +updateStatus(status: LoadStatus) void
+    }
+
+    class Bid {
+        +UUID id
+        +UUID loadId
+        +UUID transporterId
+        +Decimal amount
+        +DateTime pickupDate
+        +DateTime deliveryDate
+        +String comments
+        +BidStatus status
+        +DateTime createdAt
+        +DateTime updatedAt
+        +accept() void
+        +reject() void
+        +withdraw() void
+    }
+
+    class Document {
+        +UUID id
+        +UUID userId
+        +String fileName
+        +String fileUrl
+        +String mimeType
+        +Long fileSize
+        +DocumentType documentType
+        +VerificationStatus verificationStatus
+        +String adminNotes
+        +UUID verifiedBy
+        +DateTime uploadedAt
+        +DateTime verifiedAt
+        +verify(status: VerificationStatus, notes: String) void
+        +generateSignedUrl() String
+    }
+
+    class Message {
+        +UUID id
+        +UUID senderId
+        +UUID receiverId
+        +UUID loadId
+        +String content
+        +MessageType messageType
+        +Boolean isRead
+        +DateTime createdAt
+        +DateTime readAt
+        +markAsRead() void
+    }
+
+    class Notification {
+        +UUID id
+        +UUID userId
+        +String title
+        +String content
+        +NotificationType type
+        +Boolean isRead
+        +JSON metadata
+        +DateTime createdAt
+        +DateTime readAt
+        +markAsRead() void
+    }
+
+    class AuthService {
+        +register(userData: RegisterDTO) User
+        +login(email: String, password: String) AuthResponse
+        +refreshToken(refreshToken: String) AuthResponse
+        +logout(userId: UUID) void
+        +forgotPassword(email: String) void
+        +resetPassword(token: String, password: String) void
+        +verifyEmail(token: String) void
+    }
+
+    class LoadService {
+        +createLoad(loadData: CreateLoadDTO) Load
+        +getLoads(filters: LoadFilters) Load[]
+        +getLoadById(id: UUID) Load
+        +updateLoad(id: UUID, data: UpdateLoadDTO) Load
+        +deleteLoad(id: UUID) void
+        +assignLoad(loadId: UUID, transporterId: UUID) void
+    }
+
+    class BidService {
+        +createBid(bidData: CreateBidDTO) Bid
+        +getBidsForLoad(loadId: UUID) Bid[]
+        +getUserBids(userId: UUID) Bid[]
+        +acceptBid(bidId: UUID) void
+        +rejectBid(bidId: UUID) void
+        +withdrawBid(bidId: UUID) void
+    }
+
+    class DocumentService {
+        +uploadDocument(file: File, metadata: DocumentMetadata) Document
+        +getDocuments(userId: UUID) Document[]
+        +verifyDocument(documentId: UUID, status: VerificationStatus, notes: String) void
+        +downloadDocument(documentId: UUID) FileStream
+        +deleteDocument(documentId: UUID) void
+    }
+
+    class NotificationService {
+        +createNotification(notification: CreateNotificationDTO) Notification
+        +getUserNotifications(userId: UUID) Notification[]
+        +markAsRead(notificationId: UUID) void
+        +sendRealTimeNotification(userId: UUID, notification: Notification) void
+    }
+
+    class WebSocketService {
+        +handleConnection(socket: Socket) void
+        +joinRoom(socket: Socket, room: String) void
+        +leaveRoom(socket: Socket, room: String) void
+        +broadcastToRoom(room: String, event: String, data: Object) void
+        +sendToUser(userId: UUID, event: String, data: Object) void
+    }
+
+    User ||--|| UserProfile : has
+    User ||--o{ Load : creates
+    User ||--o{ Bid : makes
+    User ||--o{ Document : uploads
+    User ||--o{ Message : sends
+    User ||--o{ Notification : receives
+    Load ||--o{ Bid : receives
+    Load ||--|| User : assigned_to
+    Bid }o--|| Load : belongs_to
+    Bid }o--|| User : made_by
+    Document }o--|| User : belongs_to
+    Message }o--|| User : from
+    Message }o--|| User : to
+    Message }o--|| Load : about

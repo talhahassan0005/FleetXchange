@@ -1,0 +1,23 @@
+$ find /workspace -name "Main logo.png" -type f
+/workspace/uploads/Main logo.png
+$ ls -la /workspace/uploads/
+
+total 242071
+drwxr-xr-x  18 root root   4841472 Sep 24 07:58 .
+drwxr-xr-x 759 root root 238231552 Sep 24 08:41 ..
+-rw-r--r--   1 root root    480262 Sep 24 07:54 FleetXchange Client Onboarding Form (1).pdf
+-rw-r--r--   1 root root    479206 Sep 24 07:14 FleetXchange Client Onboarding Form.pdf
+-rw-r--r--   1 root root    494999 Sep 24 07:54 FleetXchange Transporter Onboarding Form (1).pdf
+-rw-r--r--   1 root root    494429 Sep 24 07:14 FleetXchange Transporter Onboarding Form.pdf
+-rw-r--r--   1 root root    241636 Sep 24 07:14 Know Your Customer Form Individual 2025.pdf
+-rw-r--r--   1 root root    160885 Sep 24 07:14 Know Your Customer Form Non Individual 2025.pdf
+-rw-r--r--   1 root root     21816 Sep 24 02:58 Main logo.png
+-rw-r--r--   1 root root    333642 Sep 23 11:29 Screenshot 2025-09-23 at 20.29.20.png
+-rw-r--r--   1 root root    359849 Sep 23 11:34 Screenshot 2025-09-23 at 20.33.56.png
+-rw-r--r--   1 root root    703141 Sep 24 03:06 Screenshot 2025-09-24 at 12.06.43.png
+-rw-r--r--   1 root root    491862 Sep 24 07:08 Screenshot 2025-09-24 at 16.08.38.png
+-rw-r--r--   1 root root    505709 Sep 24 07:58 Screenshot 2025-09-24 at 16.58.24.png
+-rw-r--r--   1 root root      9405 Sep 23 12:11 clipboard (1).png
+-rw-r--r--   1 root root      8942 Sep 23 12:11 clipboard.png
+-rw-r--r--   1 root root      9405 Sep 23 12:11 image (1).png
+-rw-r--r--   1 root root      8942 Sep 23 12:11 image.png

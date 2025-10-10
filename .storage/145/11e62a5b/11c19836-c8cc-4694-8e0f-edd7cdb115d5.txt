@@ -1,0 +1,2 @@
+$ find /workspace -name "Main logo.png" -type f
+/workspace/uploads/Main logo.png

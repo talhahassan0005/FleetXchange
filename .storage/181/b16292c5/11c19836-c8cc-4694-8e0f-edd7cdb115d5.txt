@@ -1,0 +1,18 @@
+$ cd /workspace/backend && npx prisma generate
+npm WARN exec The following package was not found and will be installed: prisma@6.16.2
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Installed the @prisma/client and prisma packages in your project
+
+✔ Generated Prisma Client (v6.16.2) to ./node_modules/@prisma/client in 672ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+npm notice 
+npm notice New major version of npm available! 10.2.4 -> 11.6.1
+npm notice Changelog: <https://github.com/npm/cli/releases/tag/v11.6.1>
+npm notice Run `npm install -g npm@11.6.1` to update!
+npm notice 

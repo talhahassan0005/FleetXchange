@@ -1,0 +1,123 @@
+$ pnpm run lint
+
+> shadcnui@ lint /workspace/shadcn-ui
+> eslint --quiet ./src
+
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 117 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-DvO8UNt8.css   58.69 kB │ gzip:  10.31 kB
+dist/assets/index-mHNTDgoc.js   330.96 kB │ gzip: 105.11 kB
+✓ built in 3.68s
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 73 modules transformed.
+x Build failed in 1.95s
+error during build:
+[vite:load-fallback] Could not load /workspace/shadcn-ui/src/lib/auth (imported by src/pages/Index.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/lib/auth'
+Error: Could not load /workspace/shadcn-ui/src/lib/auth (imported by src/pages/Index.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/lib/auth'
+ ELIFECYCLE  Command failed with exit code 1.
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 118 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-5h_F0c6o.css   58.07 kB │ gzip:  10.21 kB
+dist/assets/index-LgxfC9z8.js   338.24 kB │ gzip: 107.19 kB
+✓ built in 3.69s
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 12 modules transformed.
+x Build failed in 1.42s
+error during build:
+Could not resolve "./pages/Login" from "src/App.tsx"
+file: /workspace/shadcn-ui/src/App.tsx
+    at getRollupError (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at ModuleLoader.handleInvalidResolvedId (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:21442:24)
+    at file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:21402:26
+ ELIFECYCLE  Command failed with exit code 1.
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 25 modules transformed.
+x Build failed in 1.53s
+error during build:
+[vite:load-fallback] Could not load /workspace/shadcn-ui/src/pages/Dashboard (imported by src/App.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/pages/Dashboard'
+Error: Could not load /workspace/shadcn-ui/src/pages/Dashboard (imported by src/App.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/pages/Dashboard'
+ ELIFECYCLE  Command failed with exit code 1.
+$ ls -la src/pages/
+
+total 354
+drwxr-xr-x  4 root root  12288 Sep  7 09:15 .
+drwxr-xr-x 67 root root 348160 Sep  7 09:15 ..
+-rw-r--r--  1 root root    561 Sep 23 11:27 Index.tsx
+-rw-r--r--  1 root root    921 Sep  7 09:15 NotFound.tsx
+$ ls -la src/components/
+
+total 880
+drwxr-xr-x 52 root root 278528 Sep  7 09:15 .
+drwxr-xr-x 67 root root 348160 Sep  7 09:15 ..
+drwxr-xr-x 51 root root 274432 Sep  7 09:15 ui
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 1095 modules transformed.
+x Build failed in 4.16s
+error during build:
+[vite:load-fallback] Could not load /workspace/shadcn-ui/src/components/ClientPortal (imported by src/pages/Dashboard.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/components/ClientPortal'
+Error: Could not load /workspace/shadcn-ui/src/components/ClientPortal (imported by src/pages/Dashboard.tsx): ENOENT: no such file or directory, open '/workspace/shadcn-ui/src/components/ClientPortal'
+ ELIFECYCLE  Command failed with exit code 1.
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 1730 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-Ble7SbGm.css   60.46 kB │ gzip:  10.70 kB
+dist/assets/index-DlfUYrhL.js   434.86 kB │ gzip: 133.29 kB
+✓ built in 5.74s

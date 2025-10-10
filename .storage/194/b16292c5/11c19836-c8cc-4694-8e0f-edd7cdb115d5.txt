@@ -1,0 +1,157 @@
+$ cd /workspace/backend && npx prisma generate
+npm WARN exec The following package was not found and will be installed: prisma@6.16.2
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Installed the @prisma/client and prisma packages in your project
+
+✔ Generated Prisma Client (v6.16.2) to ./node_modules/@prisma/client in 672ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+npm notice 
+npm notice New major version of npm available! 10.2.4 -> 11.6.1
+npm notice Changelog: <https://github.com/npm/cli/releases/tag/v11.6.1>
+npm notice Run `npm install -g npm@11.6.1` to update!
+npm notice 
+$ cd /workspace/backend && npm run build
+
+
+> fleetxchange-backend@1.0.0 build
+> tsc
+
+src/middleware/auth.ts(15,34): error TS7030: Not all code paths return a value.
+src/middleware/auth.ts(58,29): error TS7030: Not all code paths return a value.
+src/middleware/auth.ts(68,37): error TS7030: Not all code paths return a value.
+src/middleware/auth.ts(78,42): error TS7030: Not all code paths return a value.
+src/routes/auth.ts(14,14): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Secret | Buffer<ArrayBufferLike> | JsonWebKeyInput | PrivateKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Secret | Buffer<ArrayBufferLike> | JsonWebKeyInput | PrivateKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/routes/auth.ts(30,17): error TS7030: Not all code paths return a value.
+src/routes/auth.ts(100,17): error TS7030: Not all code paths return a value.
+src/routes/auth.ts(196,17): error TS7030: Not all code paths return a value.
+src/routes/auth.ts(249,17): error TS7030: Not all code paths return a value.
+src/routes/bids.ts(17,17): error TS7030: Not all code paths return a value.
+src/routes/bids.ts(150,17): error TS7030: Not all code paths return a value.
+src/routes/bids.ts(244,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(17,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(126,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(165,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(239,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(16,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(173,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(250,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(328,17): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(17,17): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(159,17): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(244,38): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(309,17): error TS7030: Not all code paths return a value.
+src/routes/users.ts(16,17): error TS7030: Not all code paths return a value.
+src/routes/users.ts(146,17): error TS7030: Not all code paths return a value.
+$ cd /workspace/backend && npm run build
+
+
+> fleetxchange-backend@1.0.0 build
+> tsc
+
+src/routes/auth.ts(14,14): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Secret | Buffer<ArrayBufferLike> | JsonWebKeyInput | PrivateKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Secret | Buffer<ArrayBufferLike> | JsonWebKeyInput | PrivateKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/routes/bids.ts(17,17): error TS7030: Not all code paths return a value.
+src/routes/bids.ts(150,17): error TS7030: Not all code paths return a value.
+src/routes/bids.ts(244,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(17,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(126,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(165,17): error TS7030: Not all code paths return a value.
+src/routes/documents.ts(239,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(16,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(173,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(250,17): error TS7030: Not all code paths return a value.
+src/routes/loads.ts(328,17): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(17,17): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(159,17): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(244,38): error TS7030: Not all code paths return a value.
+src/routes/messages.ts(309,17): error TS7030: Not all code paths return a value.
+src/routes/users.ts(16,17): error TS7030: Not all code paths return a value.
+src/routes/users.ts(146,17): error TS7030: Not all code paths return a value.
+$ cd /workspace/shadcn-ui
+
+$ npm install axios
+
+npm ERR! Cannot read properties of null (reading 'matches')
+
+npm ERR! A complete log of this run can be found in: /root/.npm/_logs/2025-09-24T20_09_25_801Z-debug-0.log
+$ pnpm add axios
+
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Progress: resolved 1, reused 1, downloaded 0, added 0
+Progress: resolved 76, reused 75, downloaded 1, added 0
+Progress: resolved 413, reused 402, downloaded 4, added 0
+ WARN  1 deprecated subdependencies found: rollup-plugin-terser@7.0.2
+Packages: +21
++++++++++++++++++++++
+Progress: resolved 522, reused 427, downloaded 21, added 21
+Progress: resolved 522, reused 427, downloaded 21, added 21, done
+
+dependencies:
++ axios 1.12.2
+
+Done in 5.9s
+$ pnpm run lint
+
+
+> shadcnui@ lint /workspace/shadcn-ui
+> eslint --quiet ./src
+
+
+/workspace/shadcn-ui/src/lib/api.ts
+  184:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  192:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  211:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  235:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  243:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  247:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  263:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  271:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  275:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  295:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  303:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  314:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  330:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  338:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  346:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/workspace/shadcn-ui/src/lib/auth.ts
+   96:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  137:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  165:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  184:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  286:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  308:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  325:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  338:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 34 problems (34 errors, 0 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.

@@ -1,0 +1,175 @@
+sequenceDiagram
+    participant U as User
+    participant C as Client
+    participant T as Transporter
+    participant A as Admin
+    participant FE as Frontend
+    participant API as API Gateway
+    participant AS as AuthService
+    participant US as UserService
+    participant DS as DocumentService
+    participant LS as LoadService
+    participant BS as BidService
+    participant MS as MessageService
+    participant NS as NotificationService
+    participant WS as WebSocket
+    participant DB as Database
+    participant S3 as File Storage
+
+    Note over U,S3: User Registration and Document Upload Flow
+    
+    U->>FE: Register (email, password, role, company info)
+    FE->>API: POST /api/auth/register
+    API->>AS: register(userData)
+    AS->>US: createUser(userData)
+    US->>DB: INSERT user, user_profile
+    DB-->>US: user created
+    US-->>AS: User object
+    AS->>NS: createNotification(welcome)
+    AS-->>API: AuthResult with token
+    API-->>FE: Registration success + JWT
+    FE-->>U: Registration complete, please verify email
+
+    U->>FE: Upload documents
+    FE->>API: POST /api/documents/upload
+    API->>DS: uploadDocument(userId, file, type)
+    DS->>S3: store file
+    S3-->>DS: file URL
+    DS->>DB: INSERT document record
+    DB-->>DS: document created
+    DS->>NS: notifyAdmins(new document)
+    DS-->>API: Document object
+    API-->>FE: Upload successful
+    FE-->>U: Document uploaded, awaiting verification
+
+    Note over A,DB: Admin Document Verification Flow
+    
+    A->>FE: Review pending documents
+    FE->>API: GET /api/admin/documents/pending
+    API->>DS: getDocumentsByStatus(PENDING)
+    DS->>DB: SELECT documents WHERE status = 'pending'
+    DB-->>DS: pending documents
+    DS-->>API: Document list
+    API-->>FE: Pending documents
+    FE-->>A: Display documents for review
+
+    A->>FE: Verify document
+    FE->>API: PUT /api/admin/documents/{id}/verify
+    API->>DS: verifyDocument(documentId, adminId)
+    DS->>DB: UPDATE document SET status = 'verified'
+    DB-->>DS: document updated
+    DS->>NS: notifyUser(document verified)
+    DS->>US: checkUserVerificationStatus(userId)
+    US->>DB: SELECT documents WHERE user_id AND required = true
+    DB-->>US: user documents
+    US->>US: allRequiredDocumentsVerified()
+    US->>DB: UPDATE user SET status = 'active'
+    US->>NS: notifyUser(account activated)
+    DS-->>API: Updated document
+    API-->>FE: Verification successful
+    FE-->>A: Document verified
+
+    Note over C,DB: Load Posting Flow
+    
+    C->>FE: Create new load
+    FE->>API: POST /api/loads
+    API->>LS: createLoad(clientId, loadData)
+    LS->>DB: INSERT load
+    DB-->>LS: load created
+    LS->>NS: notifyTransporters(new load)
+    LS->>WS: broadcast(new_load_available)
+    LS-->>API: Load object
+    API-->>FE: Load created successfully
+    FE-->>C: Load posted, transporters notified
+
+    Note over T,DB: Transporter Bidding Flow
+    
+    T->>FE: Browse available loads
+    FE->>API: GET /api/loads/available
+    API->>LS: getAvailableLoads(transporterId)
+    LS->>DB: SELECT loads WHERE status = 'active'
+    DB-->>LS: available loads
+    LS-->>API: Load list
+    API-->>FE: Available loads
+    FE-->>T: Display loads with details
+
+    T->>FE: Submit bid on load
+    FE->>API: POST /api/bids
+    API->>BS: submitBid(bidData)
+    BS->>DB: INSERT bid
+    DB-->>BS: bid created
+    BS->>NS: notifyClient(new bid)
+    BS->>WS: broadcast(new_bid, loadId)
+    BS-->>API: Bid object
+    API-->>FE: Bid submitted successfully
+    FE-->>T: Bid submitted, client notified
+
+    Note over C,DB: Bid Acceptance Flow
+    
+    C->>FE: View bids for load
+    FE->>API: GET /api/loads/{id}/bids
+    API->>BS: getBidsByLoad(loadId)
+    BS->>DB: SELECT bids WHERE load_id
+    DB-->>BS: load bids
+    BS-->>API: Bid list
+    API-->>FE: Load bids
+    FE-->>C: Display bids with transporter details
+
+    C->>FE: Accept bid
+    FE->>API: PUT /api/bids/{id}/accept
+    API->>BS: acceptBid(bidId)
+    BS->>DB: UPDATE bid SET status = 'accepted'
+    BS->>LS: assignLoad(loadId, bidId)
+    LS->>DB: UPDATE load SET status = 'assigned', assigned_bid_id
+    BS->>NS: notifyTransporter(bid accepted)
+    BS->>NS: notifyOtherBidders(bid rejected)
+    BS->>WS: broadcast(bid_accepted, loadId)
+    BS-->>API: Accepted bid
+    API-->>FE: Bid accepted successfully
+    FE-->>C: Transporter assigned to load
+
+    Note over C,T: Messaging Flow
+    
+    C->>FE: Send message to transporter
+    FE->>API: POST /api/messages
+    API->>MS: sendMessage(messageData)
+    MS->>DB: INSERT message
+    DB-->>MS: message created
+    MS->>NS: notifyRecipient(new message)
+    MS->>WS: broadcast(new_message, threadId)
+    MS-->>API: Message object
+    API-->>FE: Message sent
+    FE-->>C: Message delivered
+
+    WS->>FE: new_message event
+    FE->>T: Display new message notification
+    T->>FE: Open message thread
+    FE->>API: GET /api/messages/thread/{threadId}
+    API->>MS: getMessages(loadId, userId)
+    MS->>DB: SELECT messages WHERE thread_id
+    DB-->>MS: thread messages
+    MS-->>API: Message list
+    API-->>FE: Thread messages
+    FE-->>T: Display conversation
+
+    T->>FE: Reply to message
+    FE->>API: POST /api/messages
+    API->>MS: sendMessage(replyData)
+    MS->>DB: INSERT message
+    DB-->>MS: message created
+    MS->>NS: notifyRecipient(new message)
+    MS->>WS: broadcast(new_message, threadId)
+    MS-->>API: Message object
+    API-->>FE: Reply sent
+    FE-->>T: Reply delivered
+
+    WS->>FE: new_message event
+    FE->>C: Display new message notification
+    C->>FE: Mark messages as read
+    FE->>API: PUT /api/messages/read
+    API->>MS: markAsRead(messageIds)
+    MS->>DB: UPDATE messages SET read_at = NOW()
+    DB-->>MS: messages updated
+    MS-->>API: Success
+    API-->>FE: Messages marked as read
+    FE-->>C: Messages read status updated

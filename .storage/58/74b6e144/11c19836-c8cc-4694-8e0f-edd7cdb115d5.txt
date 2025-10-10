@@ -1,0 +1,55 @@
+$ ls -la src/pages/
+total 449
+drwxr-xr-x  6 root root  24576 Sep 23 11:36 .
+drwxr-xr-x 74 root root 425984 Sep  7 09:15 ..
+-rw-r--r--  1 root root   1086 Sep 23 11:36 Dashboard.tsx
+-rw-r--r--  1 root root    606 Sep 23 11:53 Index.tsx
+-rw-r--r--  1 root root   4662 Sep 23 11:36 Login.tsx
+-rw-r--r--  1 root root    921 Sep  7 09:15 NotFound.tsx
+$ ls -la src/components/
+
+total 1082
+drwxr-xr-x 57 root root 348160 Sep 23 11:40 .
+drwxr-xr-x 74 root root 425984 Sep  7 09:15 ..
+-rw-r--r--  1 root root  13715 Sep 23 11:47 AdminPortal.tsx
+-rw-r--r--  1 root root    991 Sep 23 11:36 AuthGuard.tsx
+-rw-r--r--  1 root root  19622 Sep 23 11:48 ClientPortal.tsx
+-rw-r--r--  1 root root   6633 Sep 23 11:40 DocumentUpload.tsx
+-rw-r--r--  1 root root  17894 Sep 23 11:50 TransporterPortal.tsx
+drwxr-xr-x 51 root root 274432 Sep  7 09:15 ui
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 1727 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-CytQRSiO.css   61.08 kB │ gzip:  10.75 kB
+dist/assets/index-CbTD-pBR.js   433.30 kB │ gzip: 131.99 kB
+✓ built in 5.54s
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 1727 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-CytQRSiO.css   61.08 kB │ gzip:  10.75 kB
+dist/assets/index-CbTD-pBR.js   433.30 kB │ gzip: 131.99 kB
+✓ built in 5.70s
+$ pnpm run lint
+
+
+> shadcnui@ lint /workspace/shadcn-ui
+> eslint --quiet ./src
+

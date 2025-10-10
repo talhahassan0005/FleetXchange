@@ -1,0 +1,8 @@
+$ ls -la src/pages/
+total 449
+drwxr-xr-x  6 root root  24576 Sep 23 11:36 .
+drwxr-xr-x 74 root root 425984 Sep  7 09:15 ..
+-rw-r--r--  1 root root   1086 Sep 23 11:36 Dashboard.tsx
+-rw-r--r--  1 root root    606 Sep 23 11:53 Index.tsx
+-rw-r--r--  1 root root   4662 Sep 23 11:36 Login.tsx
+-rw-r--r--  1 root root    921 Sep  7 09:15 NotFound.tsx

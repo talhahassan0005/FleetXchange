@@ -1,0 +1,3 @@
+$ mkdir -p src/assets
+$ cp "/workspace/uploads/Main logo.png" src/assets/fleetxchange-logo.png
+

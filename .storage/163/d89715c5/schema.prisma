@@ -1,0 +1,190 @@
+// FleetXchange Database Schema
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  ADMIN
+  CLIENT
+  TRANSPORTER
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  REJECTED
+  SUSPENDED
+}
+
+enum LoadStatus {
+  ACTIVE
+  ASSIGNED
+  COMPLETED
+  CANCELLED
+}
+
+enum BidStatus {
+  ACTIVE
+  WON
+  LOST
+  WITHDRAWN
+}
+
+enum DocumentVerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  MORE_INFO_REQUIRED
+}
+
+enum MessageType {
+  BID_NOTIFICATION
+  STATUS_UPDATE
+  GENERAL
+  SYSTEM
+}
+
+model User {
+  id                String     @id @default(uuid())
+  email             String     @unique
+  password          String
+  userType          UserType
+  status            UserStatus @default(PENDING)
+  
+  // Profile Information
+  companyName       String
+  contactPerson     String
+  phone             String
+  address           String
+  businessRegistration String?
+  taxId             String?
+  
+  // Timestamps
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  lastLogin         DateTime?
+  
+  // Relations
+  loads             Load[]     @relation("ClientLoads")
+  bids              Bid[]      @relation("TransporterBids")
+  documents         Document[] @relation("UserDocuments")
+  sentMessages      Message[]  @relation("SentMessages")
+  receivedMessages  Message[]  @relation("ReceivedMessages")
+  verifiedDocuments Document[] @relation("VerifiedByAdmin")
+  assignedLoads     Load[]     @relation("AssignedTransporter")
+  
+  @@map("users")
+}
+
+model Load {
+  id                    String     @id @default(uuid())
+  title                 String
+  description           String
+  cargoType             String
+  weight                Float
+  pickupLocation        String
+  deliveryLocation      String
+  pickupDate            DateTime
+  deliveryDate          DateTime
+  budgetMin             Float
+  budgetMax             Float
+  status                LoadStatus @default(ACTIVE)
+  
+  // Relations
+  clientId              String
+  client                User       @relation("ClientLoads", fields: [clientId], references: [id], onDelete: Cascade)
+  assignedTransporterId String?
+  assignedTransporter   User?      @relation("AssignedTransporter", fields: [assignedTransporterId], references: [id])
+  
+  bids                  Bid[]      @relation("LoadBids")
+  messages              Message[]  @relation("LoadMessages")
+  
+  // Timestamps
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  
+  @@map("loads")
+}
+
+model Bid {
+  id           String    @id @default(uuid())
+  amount       Float
+  pickupDate   DateTime
+  deliveryDate DateTime
+  comments     String?
+  status       BidStatus @default(ACTIVE)
+  
+  // Relations
+  loadId       String
+  load         Load      @relation("LoadBids", fields: [loadId], references: [id], onDelete: Cascade)
+  transporterId String
+  transporter  User      @relation("TransporterBids", fields: [transporterId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  @@map("bids")
+}
+
+model Document {
+  id                   String                      @id @default(uuid())
+  fileName             String
+  fileUrl              String
+  documentType         String
+  verificationStatus   DocumentVerificationStatus @default(PENDING)
+  adminNotes           String?
+  
+  // Relations
+  userId               String
+  user                 User                        @relation("UserDocuments", fields: [userId], references: [id], onDelete: Cascade)
+  verifiedById         String?
+  verifiedBy           User?                       @relation("VerifiedByAdmin", fields: [verifiedById], references: [id])
+  
+  // Timestamps
+  uploadedAt           DateTime                    @default(now())
+  verifiedAt           DateTime?
+  updatedAt            DateTime                    @updatedAt
+  
+  @@map("documents")
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  message     String
+  messageType MessageType @default(GENERAL)
+  isRead      Boolean     @default(false)
+  
+  // Relations
+  loadId      String?
+  load        Load?       @relation("LoadMessages", fields: [loadId], references: [id], onDelete: Cascade)
+  senderId    String
+  sender      User        @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId  String
+  receiver    User        @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("messages")
+}
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   Json?
+  userId    String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  
+  @@map("system_logs")
+}

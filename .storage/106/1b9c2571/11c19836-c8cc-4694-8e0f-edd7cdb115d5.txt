@@ -1,0 +1,51 @@
+$ pnpm run build
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 2528 modules transformed.
+x Build failed in 6.06s
+error during build:
+src/components/DocumentUpload.tsx (10:38): "REQUIRED_DOCUMENTS" is not exported by "src/lib/auth.ts", imported by "src/components/DocumentUpload.tsx".
+file: /workspace/shadcn-ui/src/components/DocumentUpload.tsx:10:38
+
+ 8: import { Alert, AlertDescription } from '@/components/ui/alert';
+ 9: import { Upload, FileText, CheckCircle, XCircle, Clock, AlertCircle, Eye } from 'lucide-react';
+10: import { authService, User, Document, REQUIRED_DOCUMENTS } from '@/lib/auth';
+                                          ^
+11: 
+12: export default function DocumentUpload() {
+
+    at getRollupError (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:16830:16)
+    at Module.traceVariable (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:17279:29)
+    at ModuleScope.findVariable (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:14925:39)
+    at FunctionScope.findVariable (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:5620:38)
+    at FunctionBodyScope.findVariable (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:5620:38)
+    at ReturnValueScope.findVariable (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:5620:38)
+    at FunctionBodyScope.findVariable (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:5620:38)
+    at Identifier.bind (file:///workspace/shadcn-ui/node_modules/.pnpm/rollup@4.45.1/node_modules/rollup/dist/es/shared/node-entry.js:5394:40)
+ ELIFECYCLE  Command failed with exit code 1.
+$ pnpm run build
+
+
+> shadcnui@ build /workspace/shadcn-ui
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 2526 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.75 kB │ gzip:   0.40 kB
+dist/assets/index-Dt6zFox7.css   66.94 kB │ gzip:  11.52 kB
+dist/assets/index-u_oY74cp.js   890.87 kB │ gzip: 251.41 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 10.07s
