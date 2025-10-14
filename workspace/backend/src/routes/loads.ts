@@ -34,6 +34,9 @@ router.get('/', [
   const clientId = req.query.clientId as string;
   const assignedTransporterId = req.query.assignedTransporterId as string;
 
+  console.log('🔍 GET /loads - Query params:', { page, limit, status, clientId, assignedTransporterId });
+  console.log('👤 User:', { id: req.user!.id, type: req.user!.userType });
+
   // Build query for filtering
   const query: any = {};
   
@@ -48,6 +51,7 @@ router.get('/', [
   // If assignedTransporterId is provided, filter by it
   if (assignedTransporterId) {
     query.assignedTransporterId = assignedTransporterId;
+    console.log('✅ Filtering by assignedTransporterId:', assignedTransporterId);
   }
 
   // If user is not admin, filter based on user type
@@ -70,14 +74,22 @@ router.get('/', [
 
   // Get loads from database using MongoDB (exclude soft-deleted)
   const loadsCollection = getLoadsCollection();
+  const finalQuery = { ...query, deletedAt: { $exists: false } };
+  console.log('🔍 Final MongoDB query:', JSON.stringify(finalQuery, null, 2));
+  
   const loads = await loadsCollection
-    .find({ ...query, deletedAt: { $exists: false } })
+    .find(finalQuery)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .toArray();
 
-  const total = await loadsCollection.countDocuments({ ...query, deletedAt: { $exists: false } });
+  console.log('📦 Loads found:', loads.length);
+  if (assignedTransporterId && loads.length > 0) {
+    console.log('✅ Sample load assignedTransporterId:', loads[0].assignedTransporterId);
+  }
+
+  const total = await loadsCollection.countDocuments(finalQuery);
 
   // Convert MongoDB _id to id for frontend compatibility
   const formattedLoads = loads.map(load => ({

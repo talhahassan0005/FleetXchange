@@ -32,11 +32,17 @@ export default function PodsPage() {
 			return;
 		}
 		// loads assigned/won by this transporter
+		console.log('🔍 POD Page: Fetching loads for transporter:', user.id);
 		api.loads.getAll({ assignedTransporterId: user.id, page: 1, limit: 50 }).then((resp) => {
+			console.log('📦 POD Page: API Response:', resp);
 			const loads: Load[] = resp.loads || [];
+			console.log('📦 POD Page: Total loads received:', loads.length);
 			// Filter for assigned or completed loads where transporter can upload POD
-			setEligibleLoads(loads.filter(l => l.status === 'ASSIGNED' || l.status === 'COMPLETED'));
-		}).catch(() => {
+			const eligible = loads.filter(l => l.status === 'ASSIGNED' || l.status === 'COMPLETED');
+			console.log('✅ POD Page: Eligible loads (ASSIGNED/COMPLETED):', eligible.length, eligible);
+			setEligibleLoads(eligible);
+		}).catch((error) => {
+			console.error('❌ POD Page: Failed to fetch loads:', error);
 			setEligibleLoads([]);
 		});
 	}, [user, navigate]);
