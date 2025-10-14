@@ -33,13 +33,36 @@ export default function PodsPage() {
 		}
 		// loads assigned/won by this transporter
 		console.log('🔍 POD Page: Fetching loads for transporter:', user.id);
+		console.log('🔍 POD Page: Making API call with params:', { assignedTransporterId: user.id, page: 1, limit: 50 });
+		
+		// First, try to fetch ALL loads this transporter can see (including ACTIVE ones they can bid on)
+		api.loads.getAll({ page: 1, limit: 50 }).then((allResp) => {
+			console.log('🔍 POD Page: ALL loads visible to transporter:', allResp.loads?.length || 0);
+			if (allResp.loads && allResp.loads.length > 0) {
+				const assignedToMe = allResp.loads.filter((l: Load) => l.assignedTransporterId === user.id);
+				console.log('🔍 POD Page: Loads assigned to me:', assignedToMe.length, assignedToMe.map((l: Load) => ({ id: l.id, title: l.title, status: l.status })));
+			}
+		}).catch(err => console.error('Failed to fetch all loads:', err));
+		
 		api.loads.getAll({ assignedTransporterId: user.id, page: 1, limit: 50 }).then((resp) => {
 			console.log('📦 POD Page: API Response:', resp);
 			const loads: Load[] = resp.loads || [];
 			console.log('📦 POD Page: Total loads received:', loads.length);
+			
+			// Log all load statuses for debugging
+			if (loads.length > 0) {
+				console.log('📊 POD Page: Load statuses:', loads.map(l => ({ id: l.id, title: l.title, status: l.status })));
+			}
+			
 			// Filter for assigned or completed loads where transporter can upload POD
 			const eligible = loads.filter(l => l.status === 'ASSIGNED' || l.status === 'COMPLETED');
 			console.log('✅ POD Page: Eligible loads (ASSIGNED/COMPLETED):', eligible.length, eligible);
+			
+			// If no eligible loads, show warning
+			if (loads.length > 0 && eligible.length === 0) {
+				console.warn('⚠️ POD Page: You have loads assigned but none are ASSIGNED or COMPLETED status. Current statuses:', loads.map(l => l.status));
+			}
+			
 			setEligibleLoads(eligible);
 		}).catch((error) => {
 			console.error('❌ POD Page: Failed to fetch loads:', error);
