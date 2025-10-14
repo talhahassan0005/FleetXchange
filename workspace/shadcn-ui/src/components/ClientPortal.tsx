@@ -222,10 +222,8 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
     console.log('Loading data for user:', currentUser.email);
     
     try {
-      // Show loading only for initial load
-      if (loads.length === 0 && bids.length === 0) {
-        setIsLoading(true);
-      }
+      // Always show loading on initial data load
+      setIsLoading(true);
       
       // Load essential data first (loads + unread count)
       console.log('Loading essential data first...');
@@ -251,7 +249,9 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
       // Check document verification status for posting loads
       try {
-        const docs = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
+        const docsResponse = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
+        // API returns response.data.documents, so docsResponse is already the array
+        const docs = Array.isArray(docsResponse) ? docsResponse : [];
         const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
         setIsVerified(approved);
         console.log('Document verification status for user:', approved);

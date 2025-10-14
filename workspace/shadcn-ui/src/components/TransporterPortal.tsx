@@ -268,10 +268,8 @@ export default function TransporterPortal() {
 
   const loadData = async (currentUser: User) => {
     try {
-      // Show loading only for initial load
-      if (loads.length === 0 && myBids.length === 0) {
-        setIsLoading(true);
-      }
+      // Always show loading on initial data load
+      setIsLoading(true);
       
       // Load essential data first (active loads + unread count)
       console.log('Loading essential transporter data first...');
@@ -305,7 +303,9 @@ export default function TransporterPortal() {
       // Check document verification status for transporter
       try {
         if (!currentUser?.id) throw new Error('Missing current user id');
-        const docs = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
+        const docsResponse = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
+        // API returns response.data.documents, so docsResponse is already the array
+        const docs = Array.isArray(docsResponse) ? docsResponse : [];
         const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
         setIsVerified(approved);
         console.log('Transporter verification status:', approved);
@@ -762,6 +762,18 @@ export default function TransporterPortal() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading transporter portal...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading screen while data is being fetched
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-gray-600">Loading transporter data...</p>
         </div>
       </div>
     );
