@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { 
   Users, FileText, Truck, BarChart3, LogOut, Settings, 
   CheckCircle, XCircle, AlertCircle, Download, UserCheck, UserX, 
-  UserMinus, Clock, TrendingUp, Activity, DollarSign
+  UserMinus, Clock, TrendingUp, Activity, DollarSign, Eye
 } from 'lucide-react';
 import { authService, User as LegacyUser } from '@/lib/auth';
 import { api, Document, Load, User } from '@/lib/api';
