@@ -1,0 +1,1 @@
+mongodb+srv://talhamoveon9_db_user:hUYW8cuIWpidCszL@cluster0.43730er.mongodb.net/fleetxchange?retryWrites=true&w=majority&appName=Cluster0

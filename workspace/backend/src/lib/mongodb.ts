@@ -34,7 +34,7 @@ class MongoDBConnection {
       // Create indexes for better performance
       await this.createIndexes();
       
-      console.log('✅ MongoDB connected successfully to:', mongoUri.includes('mongodb.net') ? 'MongoDB Atlas' : 'Local MongoDB');
+      console.log('MongoDB connected successfully to:', mongoUri.includes('mongodb.net') ? 'MongoDB Atlas' : 'Local MongoDB');
     }
   }
 
@@ -83,9 +83,9 @@ class MongoDBConnection {
       await db.collection('Invoice').createIndex({ status: 1 });
       await db.collection('Invoice').createIndex({ createdAt: -1 });
       
-      console.log('✅ Database indexes created successfully');
+      console.log('Database indexes created successfully');
     } catch (error) {
-      console.error('⚠️ Error creating indexes:', error);
+      console.error('Error creating indexes:', error);
       // Don't throw - indexes might already exist
     }
   }
@@ -106,7 +106,7 @@ class MongoDBConnection {
       await this.client.close();
       this.client = null;
       this.db = null;
-      console.log('✅ MongoDB disconnected');
+      console.log('MongoDB disconnected');
     }
   }
 }

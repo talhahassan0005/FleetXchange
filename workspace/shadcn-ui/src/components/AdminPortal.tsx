@@ -157,57 +157,50 @@ export default function AdminPortal() {
 
     // Listen for new bids
     const handleBidCreated = (data: any) => {
-      console.log('🔔 [ADMIN] New bid created via WebSocket:', data);
       // Refresh loads to show updated bid counts
       api.loads.getAll().then(loadsResponse => {
-        console.log('✅ [ADMIN] Loads refreshed after new bid');
         setLoads(loadsResponse.loads || []);
       }).catch(error => {
-        console.error('❌ [ADMIN] Failed to refresh loads after new bid:', error);
+        console.error('Failed to refresh loads:', error);
       });
     };
 
     // Listen for bid acceptance/rejection
     const handleBidAccepted = (data: any) => {
-      console.log('🔔 Bid accepted:', data);
       // Refresh loads to show updated status
       api.loads.getAll().then(loadsResponse => {
         setLoads(loadsResponse.loads || []);
       }).catch(error => {
-        console.error('Failed to refresh loads after bid acceptance:', error);
+        console.error('Failed to refresh loads:', error);
       });
     };
 
     const handleBidRejected = (data: any) => {
-      console.log('🔔 Bid rejected:', data);
       // Refresh loads to show updated status
       api.loads.getAll().then(loadsResponse => {
         setLoads(loadsResponse.loads || []);
       }).catch(error => {
-        console.error('Failed to refresh loads after bid rejection:', error);
+        console.error('Failed to refresh loads:', error);
       });
     };
 
     // Listen for document uploads
     const handleDocumentUploaded = (data: any) => {
-      console.log('🔔 [ADMIN] Document uploaded via WebSocket:', data);
       // Refresh documents
       api.documents.getAll().then(documentsResponse => {
-        console.log('✅ [ADMIN] Documents refreshed after upload');
         setDocuments(documentsResponse.documents || []);
       }).catch(error => {
-        console.error('❌ [ADMIN] Failed to refresh documents after upload:', error);
+        console.error('Failed to refresh documents:', error);
       });
     };
 
     // Listen for document verification updates
     const handleDocumentVerificationUpdated = (data: any) => {
-      console.log('🔔 Document verification updated:', data);
       // Refresh documents
       api.documents.getAll().then(documentsResponse => {
         setDocuments(documentsResponse.documents || []);
       }).catch(error => {
-        console.error('Failed to refresh documents after verification:', error);
+        console.error('Failed to refresh documents:', error);
       });
     };
 
@@ -233,7 +226,6 @@ export default function AdminPortal() {
     const interval = setInterval(async () => {
       try {
         await loadData();
-        console.log('✅ Admin portal auto-refresh completed');
       } catch (error) {
         console.error('Failed to auto-refresh admin data:', error);
       }
@@ -245,14 +237,11 @@ export default function AdminPortal() {
   const loadData = async () => {
     try {
       // Load all admin data in parallel for faster loading
-      console.log('Loading all admin data in parallel...');
       const [usersResponse, documentsResponse, loadsResponse] = await Promise.all([
         api.users.getAll(),
         api.documents.getAll(),
         api.loads.getAll()
       ]);
-      
-      console.log('All admin API responses received');
       
       // Convert API users to keep uppercase format for User interface from api.ts
       const convertedUsers = usersResponse.users.map((apiUser: any) => ({
@@ -301,21 +290,12 @@ export default function AdminPortal() {
       };
       setStats(statsData);
       
-      // Show success message on first load
-      if (users.length === 0) {
-        toast.success('Admin portal loaded successfully!', {
-          description: `Found ${convertedUsers.length} users, ${documentsResponse.documents.length} documents, and ${loadsResponse.loads.length} loads`,
-          duration: 3000,
-        });
-      }
-      
-      console.log('✅ All admin data loaded successfully in parallel');
       
     } catch (error) {
       console.error('Failed to load admin data:', error);
       toast.error('Failed to load admin data', {
-        description: 'Please refresh the page or contact support if the issue persists.',
-        duration: 5000,
+        description: 'Please refresh the page.',
+        duration: 3000,
       });
     }
   };

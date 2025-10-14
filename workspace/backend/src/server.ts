@@ -121,19 +121,16 @@ app.use('*', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log('🚀 FleetXchange Backend Server Started');
-  console.log(`📡 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-  console.log(`📚 API Base URL: http://localhost:${PORT}/api`);
-  console.log('⚡ Socket.IO enabled for real-time features');
+  console.log(`FleetXchange Backend Server Started on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Health check: http://localhost:${PORT}/health`);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('🛑 SIGTERM received, shutting down gracefully');
+  console.log('SIGTERM received, shutting down gracefully');
   server.close(() => {
-    console.log('✅ Process terminated');
+    console.log('Process terminated');
     process.exit(0);
   });
 });
