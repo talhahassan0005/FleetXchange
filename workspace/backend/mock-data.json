@@ -1,0 +1,453 @@
+{
+  "loads": [
+    {
+      "id": "load-1",
+      "title": "Electronics Shipment",
+      "description": "Urgent delivery of electronic components",
+      "cargoType": "Electronics",
+      "weight": 500,
+      "pickupLocation": "Cape Town",
+      "deliveryLocation": "Johannesburg",
+      "pickupDate": "2024-02-01T08:00:00.000Z",
+      "deliveryDate": "2024-02-03T17:00:00.000Z",
+      "budgetMin": 5000,
+      "budgetMax": 8000,
+      "currency": "USD",
+      "status": "ACTIVE",
+      "clientId": "client-1",
+      "assignedTransporterId": null,
+      "createdAt": "2025-10-09T06:21:14.908Z",
+      "updatedAt": "2025-10-09T06:21:14.908Z",
+      "client": {
+        "id": "client-1",
+        "companyName": "Client Company",
+        "contactPerson": "Client Contact"
+      },
+      "assignedTransporter": null,
+      "_count": {
+        "bids": 0
+      }
+    },
+    {
+      "id": "load-2",
+      "title": "Furniture Transport",
+      "description": "Moving furniture from warehouse to office",
+      "cargoType": "Furniture",
+      "weight": 300,
+      "pickupLocation": "Durban",
+      "deliveryLocation": "Pretoria",
+      "pickupDate": "2024-02-05T08:00:00.000Z",
+      "deliveryDate": "2024-02-07T17:00:00.000Z",
+      "budgetMin": 3000,
+      "budgetMax": 6000,
+      "currency": "USD",
+      "status": "ACTIVE",
+      "clientId": "client-1",
+      "assignedTransporterId": null,
+      "createdAt": "2025-10-09T06:26:54.391Z",
+      "updatedAt": "2025-10-09T06:26:54.391Z",
+      "client": {
+        "id": "client-1",
+        "companyName": "Client Company",
+        "contactPerson": "Client Contact"
+      },
+      "assignedTransporter": null,
+      "_count": {
+        "bids": 0
+      }
+    },
+    {
+      "id": "load-3",
+      "title": "Test Load",
+      "description": "Testing load creation",
+      "cargoType": "Electronics",
+      "weight": 100,
+      "pickupLocation": "Cape Town",
+      "deliveryLocation": "Johannesburg",
+      "pickupDate": "2024-02-01T08:00:00.000Z",
+      "deliveryDate": "2024-02-03T17:00:00.000Z",
+      "budgetMin": 5000,
+      "budgetMax": 8000,
+      "currency": "USD",
+      "status": "ACTIVE",
+      "clientId": "client-1",
+      "assignedTransporterId": null,
+      "createdAt": "2025-10-09T06:42:43.750Z",
+      "updatedAt": "2025-10-09T06:42:43.750Z",
+      "client": {
+        "id": "client-1",
+        "companyName": "Client Company",
+        "contactPerson": "Client Contact"
+      },
+      "assignedTransporter": null,
+      "_count": {
+        "bids": 0
+      }
+    },
+    {
+      "id": "load-4",
+      "title": "tahusn",
+      "description": "sjxnkjna",
+      "cargoType": "nnnjnj",
+      "weight": 89,
+      "pickupLocation": "njnkj",
+      "deliveryLocation": "nsjnk",
+      "pickupDate": "2025-10-09T00:00:00.000Z",
+      "deliveryDate": "2025-10-16T00:00:00.000Z",
+      "budgetMin": 20000,
+      "budgetMax": 788888,
+      "currency": "USD",
+      "status": "ACTIVE",
+      "clientId": "client-1",
+      "assignedTransporterId": null,
+      "createdAt": "2025-10-09T06:44:02.975Z",
+      "updatedAt": "2025-10-09T06:44:02.975Z",
+      "client": {
+        "id": "client-1",
+        "companyName": "Client Company",
+        "contactPerson": "Client Contact"
+      },
+      "assignedTransporter": null,
+      "_count": {
+        "bids": 0
+      }
+    }
+  ],
+  "bids": [
+    {
+      "id": "bid-1",
+      "loadId": "load-1",
+      "transporterId": "transporter-1",
+      "amount": 6500,
+      "pickupDate": "2024-02-01T08:00:00.000Z",
+      "deliveryDate": "2024-02-03T16:00:00.000Z",
+      "comments": "We have experience with electronics transport",
+      "status": "ACTIVE",
+      "createdAt": "2025-10-09T06:21:59.477Z",
+      "updatedAt": "2025-10-09T06:21:59.477Z",
+      "load": {
+        "id": "load-1",
+        "title": "Electronics Shipment",
+        "client": {
+          "id": "client-1",
+          "companyName": "Client Company"
+        }
+      },
+      "transporter": {
+        "id": "transporter-1",
+        "companyName": "Transporter Company",
+        "contactPerson": "Transporter Contact"
+      }
+    },
+    {
+      "id": "bid-2",
+      "loadId": "load-2",
+      "transporterId": "transporter-1",
+      "amount": 4500,
+      "pickupDate": "2024-02-05T09:00:00.000Z",
+      "deliveryDate": "2024-02-07T16:00:00.000Z",
+      "comments": "We have specialized furniture transport equipment",
+      "status": "ACTIVE",
+      "createdAt": "2025-10-09T06:27:03.399Z",
+      "updatedAt": "2025-10-09T06:27:03.399Z",
+      "load": {
+        "id": "load-2",
+        "title": "Furniture Transport",
+        "client": {
+          "id": "client-1",
+          "companyName": "Client Company"
+        }
+      },
+      "transporter": {
+        "id": "transporter-1",
+        "companyName": "Transporter Company",
+        "contactPerson": "Transporter Contact"
+      }
+    },
+    {
+      "id": "bid-3",
+      "loadId": "load-5",
+      "transporterId": "transporter-1",
+      "amount": 50000,
+      "pickupDate": "2025-10-09T00:00:00.000Z",
+      "deliveryDate": "2025-10-15T00:00:00.000Z",
+      "comments": null,
+      "status": "ACTIVE",
+      "createdAt": "2025-10-09T06:46:58.697Z",
+      "updatedAt": "2025-10-09T06:46:58.697Z",
+      "load": {
+        "id": "load-5",
+        "title": "tahusn",
+        "client": {
+          "id": "client-1",
+          "companyName": "Client Company"
+        }
+      },
+      "transporter": {
+        "id": "transporter-1",
+        "companyName": "Transporter Company",
+        "contactPerson": "Transporter Contact"
+      }
+    },
+    {
+      "id": "bid-4",
+      "loadId": "load-4",
+      "transporterId": "transporter-1",
+      "amount": 51000,
+      "pickupDate": "2025-10-09T00:00:00.000Z",
+      "deliveryDate": "2025-10-14T00:00:00.000Z",
+      "comments": "done",
+      "status": "ACTIVE",
+      "createdAt": "2025-10-09T07:02:17.568Z",
+      "updatedAt": "2025-10-09T07:02:17.568Z",
+      "load": {
+        "id": "load-4",
+        "title": "tahusn",
+        "client": {
+          "id": "client-1",
+          "companyName": "Client Company"
+        }
+      },
+      "transporter": {
+        "id": "transporter-1",
+        "companyName": "Transporter Company",
+        "contactPerson": "Transporter Contact"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-1",
+      "senderId": "client-1",
+      "receiverId": "transporter-1",
+      "message": "Hello, I have a question about the load",
+      "messageType": "GENERAL",
+      "loadId": "load-1",
+      "isRead": false,
+      "createdAt": "2025-10-09T06:22:09.771Z",
+      "updatedAt": "2025-10-09T06:22:09.771Z",
+      "sender": {
+        "id": "client-1",
+        "companyName": "ABC Logistics Ltd",
+        "contactPerson": "John Smith",
+        "userType": "CLIENT"
+      },
+      "receiver": {
+        "id": "transporter-1",
+        "companyName": "FastMove Transport",
+        "contactPerson": "Mike Wilson",
+        "userType": "TRANSPORTER"
+      },
+      "load": {
+        "id": "load-1",
+        "title": "Electronics Shipment"
+      }
+    },
+    {
+      "id": "msg-2",
+      "senderId": "client-1",
+      "receiverId": "transporter-1",
+      "message": "Hello Transporter! I have a question about the electronics shipment load.",
+      "messageType": "GENERAL",
+      "loadId": "load-1",
+      "isRead": false,
+      "createdAt": "2025-10-09T06:25:31.382Z",
+      "updatedAt": "2025-10-09T06:25:31.382Z",
+      "sender": {
+        "id": "client-1",
+        "companyName": "ABC Logistics Ltd",
+        "contactPerson": "John Smith",
+        "userType": "CLIENT"
+      },
+      "receiver": {
+        "id": "transporter-1",
+        "companyName": "FastMove Transport",
+        "contactPerson": "Mike Wilson",
+        "userType": "TRANSPORTER"
+      },
+      "load": {
+        "id": "load-1",
+        "title": "Electronics Shipment"
+      }
+    },
+    {
+      "id": "msg-3",
+      "senderId": "transporter-1",
+      "receiverId": "client-1",
+      "message": "Hello Client! I can handle your electronics shipment. What are your specific requirements?",
+      "messageType": "GENERAL",
+      "loadId": "load-1",
+      "isRead": false,
+      "createdAt": "2025-10-09T06:25:41.213Z",
+      "updatedAt": "2025-10-09T06:25:41.213Z",
+      "sender": {
+        "id": "transporter-1",
+        "companyName": "FastMove Transport",
+        "contactPerson": "Mike Wilson",
+        "userType": "TRANSPORTER"
+      },
+      "receiver": {
+        "id": "client-1",
+        "companyName": "ABC Logistics Ltd",
+        "contactPerson": "John Smith",
+        "userType": "CLIENT"
+      },
+      "load": {
+        "id": "load-1",
+        "title": "Electronics Shipment"
+      }
+    },
+    {
+      "id": "msg-4",
+      "senderId": "transporter-1",
+      "receiverId": "client-1",
+      "message": "Hello! This message should work now.",
+      "messageType": "GENERAL",
+      "loadId": "load-2",
+      "isRead": false,
+      "createdAt": "2025-10-09T06:41:32.521Z",
+      "updatedAt": "2025-10-09T06:41:32.521Z",
+      "sender": {
+        "id": "transporter-1",
+        "companyName": "FastMove Transport",
+        "contactPerson": "Mike Wilson",
+        "userType": "TRANSPORTER"
+      },
+      "receiver": {
+        "id": "client-1",
+        "companyName": "ABC Logistics Ltd",
+        "contactPerson": "John Smith",
+        "userType": "CLIENT"
+      },
+      "load": {
+        "id": "load-2",
+        "title": "Furniture Transport"
+      }
+    },
+    {
+      "id": "msg-5",
+      "senderId": "client-1",
+      "receiverId": "transporter-1",
+      "message": "Test message",
+      "messageType": "GENERAL",
+      "loadId": "load-2",
+      "isRead": false,
+      "createdAt": "2025-10-09T06:50:57.154Z",
+      "updatedAt": "2025-10-09T06:50:57.154Z",
+      "sender": {
+        "id": "client-1",
+        "companyName": "ABC Logistics Ltd",
+        "contactPerson": "John Smith",
+        "userType": "CLIENT"
+      },
+      "receiver": {
+        "id": "transporter-1",
+        "companyName": "FastMove Transport",
+        "contactPerson": "Mike Wilson",
+        "userType": "TRANSPORTER"
+      },
+      "load": {
+        "id": "load-2",
+        "title": "Furniture Transport"
+      }
+    },
+    {
+      "id": "msg-6",
+      "senderId": "client-1",
+      "receiverId": "transporter-1",
+      "message": "Hello transporter, I need urgent delivery for my electronics shipment.",
+      "messageType": "GENERAL",
+      "loadId": "load-1",
+      "isRead": false,
+      "createdAt": "2025-10-09T07:05:50.786Z",
+      "updatedAt": "2025-10-09T07:05:50.786Z",
+      "sender": {
+        "id": "client-1",
+        "companyName": "ABC Logistics Ltd",
+        "contactPerson": "John Smith",
+        "userType": "CLIENT"
+      },
+      "receiver": {
+        "id": "transporter-1",
+        "companyName": "FastMove Transport",
+        "contactPerson": "Mike Wilson",
+        "userType": "TRANSPORTER"
+      },
+      "load": {
+        "id": "load-1",
+        "title": "Electronics Shipment"
+      }
+    },
+    {
+      "id": "msg-7",
+      "senderId": "transporter-1",
+      "receiverId": "client-1",
+      "message": "Hello client! I can handle your electronics shipment. What is your preferred timeline?",
+      "messageType": "GENERAL",
+      "loadId": "load-1",
+      "isRead": false,
+      "createdAt": "2025-10-09T07:06:12.396Z",
+      "updatedAt": "2025-10-09T07:06:12.396Z",
+      "sender": {
+        "id": "transporter-1",
+        "companyName": "FastMove Transport",
+        "contactPerson": "Mike Wilson",
+        "userType": "TRANSPORTER"
+      },
+      "receiver": {
+        "id": "client-1",
+        "companyName": "ABC Logistics Ltd",
+        "contactPerson": "John Smith",
+        "userType": "CLIENT"
+      },
+      "load": {
+        "id": "load-1",
+        "title": "Electronics Shipment"
+      }
+    }
+  ],
+  "users": [
+    {
+      "id": "admin-1",
+      "email": "mrtiger@fleetxchange.africa",
+      "userType": "ADMIN",
+      "status": "ACTIVE",
+      "companyName": "FleetXchange Africa",
+      "contactPerson": "Mr. Tiger",
+      "phone": "+27-11-123-4567",
+      "address": "FleetXchange HQ, Johannesburg, South Africa",
+      "businessRegistration": "REG001",
+      "taxId": "TAX001",
+      "createdAt": "2025-10-09T06:20:07.806Z",
+      "lastLogin": "2025-10-09T06:20:07.807Z"
+    },
+    {
+      "id": "client-1",
+      "email": "client1@example.com",
+      "userType": "CLIENT",
+      "status": "ACTIVE",
+      "companyName": "ABC Logistics Ltd",
+      "contactPerson": "John Smith",
+      "phone": "+27-11-234-5678",
+      "address": "123 Business St, Cape Town, South Africa",
+      "businessRegistration": "REG003",
+      "taxId": "TAX003",
+      "createdAt": "2025-10-09T06:20:07.807Z",
+      "lastLogin": "2025-10-09T06:20:07.807Z"
+    },
+    {
+      "id": "transporter-1",
+      "email": "transporter1@example.com",
+      "userType": "TRANSPORTER",
+      "status": "ACTIVE",
+      "companyName": "FastMove Transport",
+      "contactPerson": "Mike Wilson",
+      "phone": "+27-11-456-7890",
+      "address": "789 Transport Rd, Johannesburg, South Africa",
+      "businessRegistration": "REG005",
+      "taxId": "TAX005",
+      "createdAt": "2025-10-09T06:20:07.807Z",
+      "lastLogin": "2025-10-09T06:20:07.807Z"
+    }
+  ]
+}
