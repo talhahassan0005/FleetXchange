@@ -56,7 +56,7 @@ export default function TransporterPortal() {
   const [selectedBid, setSelectedBid] = useState<Bid | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [bidLoads, setBidLoads] = useState<{[key: string]: Load}>({});
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Changed from loading to isLoading, false by default
   const [isSubmitting, setIsSubmitting] = useState(false); // For bid placement
   const [isVerified, setIsVerified] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -123,7 +123,7 @@ export default function TransporterPortal() {
         }
       }
 
-      setLoading(false);
+      setIsLoading(false);
     };
 
     init();
@@ -268,7 +268,10 @@ export default function TransporterPortal() {
 
   const loadData = async (currentUser: User) => {
     try {
-      setLoading(true);
+      // Show loading only for initial load
+      if (loads.length === 0 && myBids.length === 0) {
+        setIsLoading(true);
+      }
       
       // Load essential data first (active loads + unread count)
       console.log('Loading essential transporter data first...');
@@ -371,7 +374,7 @@ export default function TransporterPortal() {
       setMyBids([]);
       setMessages([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -753,7 +756,7 @@ export default function TransporterPortal() {
     { id: 'messages', label: 'Messages', icon: MessageSquare, badge: unreadCount > 0 ? unreadCount : undefined }
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
