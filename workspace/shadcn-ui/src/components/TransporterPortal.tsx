@@ -302,13 +302,18 @@ export default function TransporterPortal() {
 
       // Check document verification status for transporter
       try {
-        if (!currentUser?.id) throw new Error('Missing current user id');
-        const docsResponse = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
-        // API returns response.data.documents, so docsResponse is already the array
-        const docs = Array.isArray(docsResponse) ? docsResponse : [];
-        const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
-        setIsVerified(approved);
-        console.log('Transporter verification status:', approved);
+        // Use the currentUser parameter passed to loadData, not the state variable
+        if (!currentUser?.id) {
+          console.warn('Current user id not available for verification check');
+          setIsVerified(false);
+        } else {
+          const docsResponse = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
+          // API returns response.data.documents, so docsResponse is already the array
+          const docs = Array.isArray(docsResponse) ? docsResponse : [];
+          const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
+          setIsVerified(approved);
+          console.log('Transporter verification status:', approved);
+        }
       } catch (err) {
         console.error('Failed to check transporter verification:', err);
         setIsVerified(false);
