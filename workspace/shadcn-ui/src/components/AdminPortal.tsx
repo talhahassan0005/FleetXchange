@@ -222,18 +222,9 @@ export default function AdminPortal() {
     };
   }, []);
 
-  // Auto-refresh data every 30 seconds (fallback)
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        await loadData();
-      } catch (error) {
-        console.error('Failed to auto-refresh admin data:', error);
-      }
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Auto-refresh DISABLED for performance
+  // WebSocket handles real-time updates
+  // If needed, user can manually refresh the page
 
   const loadData = async () => {
     try {

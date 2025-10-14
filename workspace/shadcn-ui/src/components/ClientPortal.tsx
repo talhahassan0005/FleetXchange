@@ -189,86 +189,25 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
     };
   }, [user]);
 
-  // Auto-refresh data every 30 seconds (fallback)
+  // Auto-refresh DISABLED - WebSocket handles real-time updates
+  // Only refresh unread count occasionally (less intrusive)
   useEffect(() => {
     if (!user) return;
     
     const interval = setInterval(async () => {
       try {
-        // Refresh unread count
+        // Only refresh unread count, not all data
         const unreadResponse = await api.messages.getUnreadCount();
         setUnreadCount(unreadResponse.unreadCount || 0);
         
-        // Refresh loads
-        const loadsResponse = await api.loads.getAll({ clientId: user.id, page: 1, limit: 10 });
-        setLoads(loadsResponse.loads || []);
+        // Removed: No automatic refresh of loads, bids, messages
+        // WebSocket handles real-time updates instead
         
-        // Refresh bids
-        const bidsResponse = await api.bids.getAll({ page: 1, limit: 20 });
-        setBids(bidsResponse.bids || []);
         
-        // Refresh messages
-        const messagesResponse = await api.messages.getAll({ page: 1, limit: 50 });
-        const userMessages = messagesResponse.messages || [];
-        setMessages(userMessages);
-        
-        // Update conversations - CLIENT should only see TRANSPORTERS
-        const conversationMap = new Map();
-        userMessages.forEach(message => {
-          // Determine the other user (not current user)
-          const otherUserId = message.senderId === user.id ? message.receiverId : message.senderId;
-          const otherUser = message.senderId === user.id ? message.receiver : message.sender;
-          const otherUserName = otherUser?.companyName || 'Unknown';
-          const otherUserType = otherUser?.userType;
-          
-          // CLIENT (logged in user) should only see TRANSPORTER conversations
-          // Skip if other user is not a TRANSPORTER
-          if (user.userType === 'CLIENT' && otherUserType !== 'TRANSPORTER') {
-            return; // Skip this message
-          }
-          
-          // Use otherUserId as unique key to prevent duplicates
-          if (!conversationMap.has(otherUserId)) {
-            conversationMap.set(otherUserId, {
-              transporterId: otherUserId, // Keep this name for backward compatibility
-              transporterName: otherUserName, // Keep this name for backward compatibility
-              otherUserId: otherUserId,
-              otherUserName: otherUserName,
-              otherUserType: otherUserType,
-              lastMessage: message.message || message.content || '',
-              lastMessageTime: message.createdAt,
-              unreadCount: 0,
-              messages: []
-            });
-          }
-          const conversation = conversationMap.get(otherUserId);
-          conversation.messages.push(message);
-          if (message.receiverId === user.id && !message.isRead) {
-            conversation.unreadCount++;
-          }
-          if (new Date(message.createdAt) > new Date(conversation.lastMessageTime)) {
-            conversation.lastMessage = message.message || message.content || '';
-            conversation.lastMessageTime = message.createdAt;
-          }
-        });
-        
-        const conversationsArray = Array.from(conversationMap.values())
-          .sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
-        setConversations(conversationsArray);
-        
-        // Refresh documents
-        try {
-          const documentsResponse = await api.documents.getAll();
-          // Documents are handled by DocumentUpload component
-        } catch (error) {
-          console.error('Failed to refresh documents:', error);
-        }
-        
-        console.log('✅ Auto-refresh completed');
       } catch (error) {
-        console.error('Failed to auto-refresh:', error);
+        console.error('Failed to refresh unread count:', error);
       }
-    }, 30000);
+    }, 60000); // Changed from 30 to 60 seconds, only for unread count
 
     return () => clearInterval(interval);
   }, [user]);
@@ -1743,13 +1682,12 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
                   </div>
                   {(() => {
                     const selectedLoad = loads.find(l => l.id === selectedTransporter.loadId);
-                    if (!selectedLoad) {
-                      return <div>Load not found</div>;
-                    }
+                    // Even if load not found, show chat interface
+                    // The ChatInterface can work with or without load details
                     return (
                       <ChatInterface
                         loadId={selectedTransporter.loadId || ''}
-                        load={selectedLoad}
+                        load={selectedLoad || null}
                         currentUser={convertToApiUser(user)}
                         onBack={() => setSelectedTransporter(null)}
                         bids={bids}

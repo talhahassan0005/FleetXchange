@@ -208,40 +208,20 @@ export default function TransporterPortal() {
     };
   }, [user]);
 
-  // Auto-refresh data every 30 seconds (fallback)
+  // Auto-refresh DISABLED - WebSocket handles real-time updates
+  // Only refresh unread count occasionally (less intrusive)
   useEffect(() => {
     if (!user) return;
     
     const interval = setInterval(async () => {
       try {
-        // Refresh unread count
+        // Only refresh unread count
         const unreadResponse = await api.messages.getUnreadCount();
         setUnreadCount(unreadResponse.unreadCount || 0);
-        
-        // Refresh bids
-        const bidsData = await api.bids.getAll({ page: 1, limit: 30 });
-        setMyBids(bidsData.bids.filter(bid => bid.transporterId === user.id));
-        
-        // Refresh messages
-        const messagesData = await api.messages.getAll({ page: 1, limit: 50 });
-        const userMessages = messagesData.messages.filter(msg => 
-          msg.senderId === user.id || msg.receiverId === user.id
-        );
-        setMessages(userMessages);
-        
-        // Refresh documents
-        try {
-          const documentsResponse = await api.documents.getAll();
-          // Documents are handled by DocumentUpload component
-        } catch (error) {
-          console.error('Failed to refresh documents:', error);
-        }
-        
-        console.log('✅ Auto-refresh completed');
       } catch (error) {
-        console.error('Failed to auto-refresh:', error);
+        console.error('Failed to refresh unread count:', error);
       }
-    }, 30000);
+    }, 60000); // 60 seconds, only for unread count
 
     return () => clearInterval(interval);
   }, [user]);
