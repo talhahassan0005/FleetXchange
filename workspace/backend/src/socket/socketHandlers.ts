@@ -9,7 +9,7 @@ interface AuthenticatedSocket extends Socket {
 }
 
 export function setupSocketHandlers(io: Server) {
-  console.log('✅ Socket.IO handlers configured');
+  console.log(' Socket.IO handlers configured');
 
   // Authentication middleware
   io.use(async (socket: AuthenticatedSocket, next) => {
@@ -45,7 +45,7 @@ export function setupSocketHandlers(io: Server) {
 
     // Join user to their personal room (format: user:{userId})
     socket.join(`user:${socket.userId}`);
-    console.log(`✅ User ${socket.userId} joined personal room: user:${socket.userId}`);
+    console.log(` User ${socket.userId} joined personal room: user:${socket.userId}`);
 
     // Join load-specific rooms based on user type
     socket.on('join_load', async (loadId: string) => {
@@ -80,7 +80,7 @@ export function setupSocketHandlers(io: Server) {
 
         if (hasAccess) {
           socket.join(`load:${loadId}`);
-          console.log(`✅ User ${socket.userId} joined load room: load:${loadId}`);
+          console.log(` User ${socket.userId} joined load room: load:${loadId}`);
           socket.emit('joined_load', { loadId, message: 'Successfully joined load room' });
         } else {
           socket.emit('error', { message: 'Access denied to this load' });
@@ -93,7 +93,7 @@ export function setupSocketHandlers(io: Server) {
     // Leave load room
     socket.on('leave_load', (loadId: string) => {
       socket.leave(`load:${loadId}`);
-      console.log(`✅ User ${socket.userId} left load room: load:${loadId}`);
+      console.log(` User ${socket.userId} left load room: load:${loadId}`);
       socket.emit('left_load', { loadId, message: 'Left load room' });
     });
 
@@ -115,7 +115,7 @@ export function setupSocketHandlers(io: Server) {
             bid: data.bidData,
             transporterId: socket.userId
           });
-          console.log(`📤 Sent new_bid notification to user:${load.clientId}`);
+          console.log(` Sent new_bid notification to user:${load.clientId}`);
         }
 
         // Notify all transporters in the load room
@@ -124,7 +124,7 @@ export function setupSocketHandlers(io: Server) {
           bid: data.bidData,
           transporterId: socket.userId
         });
-        console.log(`📤 Sent bid_placed notification to load:${data.loadId}`);
+        console.log(` Sent bid_placed notification to load:${data.loadId}`);
       } catch (error) {
         socket.emit('error', { message: 'Failed to process bid update' });
       }
@@ -154,7 +154,7 @@ export function setupSocketHandlers(io: Server) {
             status: data.status,
             loadTitle: load.title
           });
-          console.log(`📤 Sent bid_status_changed to user:${bid.transporterId}`);
+          console.log(` Sent bid_status_changed to user:${bid.transporterId}`);
         }
 
         // Notify all users in the load room
@@ -164,7 +164,7 @@ export function setupSocketHandlers(io: Server) {
           status: data.status,
           changedBy: socket.userId
         });
-        console.log(`📤 Sent bid_status_changed to load:${data.loadId}`);
+        console.log(` Sent bid_status_changed to load:${data.loadId}`);
       } catch (error) {
         socket.emit('error', { message: 'Failed to process bid status change' });
       }
@@ -176,7 +176,7 @@ export function setupSocketHandlers(io: Server) {
         const usersCollection = getUsersCollection();
         const messagesCollection = getMessagesCollection();
         
-        console.log(`📨 Message send attempt from user:${socket.userId} to user:${data.receiverId}`);
+        console.log(` Message send attempt from user:${socket.userId} to user:${data.receiverId}`);
         
         // Validate receiver exists and is active
         const receiver = await usersCollection.findOne(
@@ -186,7 +186,7 @@ export function setupSocketHandlers(io: Server) {
 
         if (!receiver) {
           socket.emit('error', { message: 'Receiver not found' });
-          console.error(`❌ Receiver not found: ${data.receiverId}`);
+          console.error( `Receiver not found: ${data.receiverId}`);
           return;
         }
 
