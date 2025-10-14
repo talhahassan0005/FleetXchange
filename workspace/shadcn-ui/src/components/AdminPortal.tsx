@@ -25,6 +25,7 @@ export default function AdminPortal() {
   const [users, setUsers] = useState<User[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loads, setLoads] = useState<Load[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<any>({
     totalUsers: 0,
     activeUsers: 0,
@@ -236,6 +237,7 @@ export default function AdminPortal() {
 
   const loadData = async () => {
     try {
+      setIsLoading(true);
       // Load all admin data in parallel for faster loading
       const [usersResponse, documentsResponse, loadsResponse] = await Promise.all([
         api.users.getAll(),
@@ -289,10 +291,11 @@ export default function AdminPortal() {
         adminUsers: convertedUsers.filter(u => u.userType === 'ADMIN').length
       };
       setStats(statsData);
-      
+      setIsLoading(false);
       
     } catch (error) {
       console.error('Failed to load admin data:', error);
+      setIsLoading(false);
       toast.error('Failed to load admin data', {
         description: 'Please refresh the page.',
         duration: 3000,
@@ -455,6 +458,15 @@ export default function AdminPortal() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-gray-600">Loading admin data...</p>
+            </div>
+          </div>
+        ) : (
+          <>
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Stats Cards */}
@@ -1502,6 +1514,8 @@ export default function AdminPortal() {
               </div>
             </DialogContent>
           </Dialog>
+        )}
+        </>
         )}
       </main>
     </div>
