@@ -41,6 +41,20 @@ router.post('/transporter', requireTransporterOrAdmin, [
   }
 
   const invoicesCollection = getInvoicesCollection();
+
+  // Check for existing invoice for this load by transporter BEFORE creating new one
+  const existingInvoice = await invoicesCollection.findOne({ loadId, role: 'TRANSPORTER' });
+  if (existingInvoice) {
+    if (existingInvoice.status === 'APPROVED') {
+      throw createError('Invoice for this load is already approved and cannot be resubmitted.', 400);
+    }
+    if (existingInvoice.status !== 'REJECTED') {
+      throw createError('Invoice for this load is already submitted and pending review. Please wait for approval or rejection.', 400);
+    }
+    // If status is REJECTED, allow resubmission - delete old one
+    await invoicesCollection.deleteOne({ _id: existingInvoice._id });
+  }
+
   const invoice = await invoicesCollection.insertOne({
     loadId,
     podId: podId || null,
@@ -61,17 +75,6 @@ router.post('/transporter', requireTransporterOrAdmin, [
     io.to(`user_${load.clientId}`).emit('invoice_submitted', { invoice: invoiceRecord });
     io.to(`user_${req.user!.id}`).emit('invoice_submitted_success', { invoice: invoiceRecord });
     io.emit('invoice_created', { invoice: invoiceRecord });
-  // Check for existing invoice for this load by transporter
-  const existingInvoice = await invoicesCollection.findOne({ loadId, role: 'TRANSPORTER' });
-  if (existingInvoice) {
-    if (existingInvoice.status === 'APPROVED') {
-      throw createError('Invoice for this load is already approved and cannot be resubmitted.', 400);
-    }
-    if (existingInvoice.status !== 'REJECTED') {
-      throw createError('Invoice for this load is already submitted and pending review. Please wait for approval or rejection.', 400);
-    }
-    // If status is REJECTED, allow resubmission
-  }
   } catch (err) { console.error('Failed to emit invoice events', err); }
 
   return res.status(201).json({ message: 'Invoice submitted successfully', invoice: invoiceRecord });

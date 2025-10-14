@@ -15,7 +15,8 @@ router.get('/', [
   query('page').optional().isInt({ min: 1 }),
   query('limit').optional().isInt({ min: 1, max: 100 }),
   query('status').optional().isIn(['ACTIVE', 'ASSIGNED', 'COMPLETED', 'CANCELLED']),
-  query('clientId').optional()
+  query('clientId').optional(),
+  query('assignedTransporterId').optional()
 ], asyncHandler(async (req: AuthRequest, res: express.Response) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -31,6 +32,7 @@ router.get('/', [
   const skip = (page - 1) * limit;
   const status = req.query.status as string;
   const clientId = req.query.clientId as string;
+  const assignedTransporterId = req.query.assignedTransporterId as string;
 
   // Build query for filtering
   const query: any = {};
@@ -43,16 +45,26 @@ router.get('/', [
     query.clientId = clientId;
   }
 
+  // If assignedTransporterId is provided, filter by it
+  if (assignedTransporterId) {
+    query.assignedTransporterId = assignedTransporterId;
+  }
+
   // If user is not admin, filter based on user type
   if (req.user!.userType !== 'ADMIN') {
     if (req.user!.userType === 'CLIENT') {
       query.clientId = req.user!.id;
     } else if (req.user!.userType === 'TRANSPORTER') {
-      // Transporters can see active loads or loads assigned to them
-      query.$or = [
-        { status: 'ACTIVE' },
-        { assignedTransporterId: req.user!.id }
-      ];
+      // If assignedTransporterId is explicitly requested, use it
+      if (assignedTransporterId) {
+        query.assignedTransporterId = assignedTransporterId;
+      } else {
+        // Otherwise, transporters can see active loads or loads assigned to them
+        query.$or = [
+          { status: 'ACTIVE' },
+          { assignedTransporterId: req.user!.id }
+        ];
+      }
     }
   }
 
