@@ -59,14 +59,9 @@ export default function Login({ onLogin }: LoginProps) {
         // Call the onLogin callback to update App state
         onLogin(user);
         
-        // Navigate to dashboard
+        // Navigate to dashboard - no reload needed, React Router handles this
         console.log('🔄 Navigating to dashboard...');
-        navigate('/dashboard');
-        // Force a one-time refresh after navigation so all portal pages initialize cleanly
-        // This avoids reloading the login page itself
-        setTimeout(() => {
-          try { window.location.reload(); } catch {}
-        }, 60);
+        navigate('/dashboard', { replace: true });
       } else {
         console.log('❌ Login failed: Invalid credentials');
         setError('Invalid email or password. Please check your credentials and try again.');
