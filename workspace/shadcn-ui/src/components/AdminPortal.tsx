@@ -25,7 +25,7 @@ export default function AdminPortal() {
   const [users, setUsers] = useState<User[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loads, setLoads] = useState<Load[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<any>({
     totalUsers: 0,
     activeUsers: 0,
@@ -1117,133 +1117,9 @@ export default function AdminPortal() {
                       </TableCell>
                       <TableCell>{new Date(load.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button size="sm" variant="outline" onClick={() => handleOpenLoadManage(load)}>
-                              Manage
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl">
-                            <DialogHeader>
-                              <DialogTitle>Load Details & Linked Records</DialogTitle>
-                              <DialogDescription>
-                                Review PODs, invoices, and payments for {load.title}
-                              </DialogDescription>
-                            </DialogHeader>
-                            {selectedLoadAdmin && (
-                              <div className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                  <div><strong>Client:</strong> {users.find(u => u.id === selectedLoadAdmin.clientId)?.email}</div>
-                                  <div><strong>Budget:</strong> {selectedLoadAdmin.currency || 'USD'} {selectedLoadAdmin.budgetMin.toLocaleString()} - {selectedLoadAdmin.currency || 'USD'} {selectedLoadAdmin.budgetMax.toLocaleString()}</div>
-                                  <div><strong>Pickup:</strong> {new Date(selectedLoadAdmin.pickupDate).toLocaleDateString()}</div>
-                                  <div><strong>Delivery:</strong> {new Date(selectedLoadAdmin.deliveryDate).toLocaleDateString()}</div>
-                                </div>
-                                {/* PODs */}
-                                <div className="border rounded p-3">
-                                  <h4 className="font-medium mb-2">PODs</h4>
-                                  {selectedLoadPods.length === 0 ? (
-                                    <div className="text-sm text-gray-500">No PODs uploaded yet.</div>
-                                  ) : (
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>File</TableHead>
-                                          <TableHead>Status</TableHead>
-                                          <TableHead>Uploaded</TableHead>
-                                          <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {selectedLoadPods.map((p: any) => (
-                                          <TableRow key={p.id || p.fileUrl}>
-                                            <TableCell><a href={p.fileUrl} target="_blank" rel="noreferrer">{p.fileName || 'POD'}</a></TableCell>
-                                            <TableCell>{(p.status || p.verificationStatus || 'PENDING').toString()}</TableCell>
-                                            <TableCell>{p.uploadedAt ? new Date(p.uploadedAt).toLocaleString() : '—'}</TableCell>
-                                            <TableCell>
-                                              <div className="flex space-x-2">
-                                                <Button size="sm" onClick={() => handlePodStatus(p.id, 'APPROVED')} style={{ backgroundColor: '#33A852' }} className="text-white">Approve</Button>
-                                                <Button size="sm" variant="destructive" onClick={() => handlePodStatus(p.id, 'REJECTED')}>Reject</Button>
-                                              </div>
-                                            </TableCell>
-                                          </TableRow>
-                                        ))}
-                                      </TableBody>
-                                    </Table>
-                                  )}
-                                </div>
-                                {/* Invoices */}
-                                <div className="border rounded p-3">
-                                  <h4 className="font-medium mb-2">Invoices</h4>
-                                  {selectedLoadInvoices.length === 0 ? (
-                                    <div className="text-sm text-gray-500">No invoices yet.</div>
-                                  ) : (
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>Type</TableHead>
-                                          <TableHead>Amount</TableHead>
-                                          <TableHead>Status</TableHead>
-                                          <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {selectedLoadInvoices.map((inv: any) => (
-                                          <TableRow key={inv.id}>
-                                            <TableCell>{(inv.type || inv.invoiceType || 'TRANSPORTER').toString()}</TableCell>
-                                            <TableCell>${Number(inv.amount || 0).toLocaleString()}</TableCell>
-                                            <TableCell>{(inv.status || 'PENDING').toString()}</TableCell>
-                                            <TableCell>
-                                              <div className="flex space-x-2">
-                                                <Button size="sm" onClick={() => handleInvoiceStatus(inv.id, 'APPROVED')} style={{ backgroundColor: '#33A852' }} className="text-white">Approve</Button>
-                                                <Button size="sm" variant="destructive" onClick={() => handleInvoiceStatus(inv.id, 'REJECTED')}>Reject</Button>
-                                              </div>
-                                            </TableCell>
-                                          </TableRow>
-                                        ))}
-                                      </TableBody>
-                                    </Table>
-                                  )}
-                                  <div className="pt-3">
-                                    <Button size="sm" onClick={handleGenerateClientInvoice}>Generate Client Invoice (commission 0)</Button>
-                                  </div>
-                                </div>
-                                {/* Payments */}
-                                <div className="border rounded p-3">
-                                  <h4 className="font-medium mb-2">Payments</h4>
-                                  {selectedLoadPayments.length === 0 ? (
-                                    <div className="text-sm text-gray-500">No payments recorded yet.</div>
-                                  ) : (
-                                    <Table>
-                                      <TableHeader>
-                                        <TableRow>
-                                          <TableHead>From → To</TableHead>
-                                          <TableHead>Amount</TableHead>
-                                          <TableHead>Status</TableHead>
-                                          <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                      </TableHeader>
-                                      <TableBody>
-                                        {selectedLoadPayments.map((p: any) => (
-                                          <TableRow key={p.id}>
-                                            <TableCell>{p.from} → {p.to}</TableCell>
-                                            <TableCell>${Number(p.amount || 0).toLocaleString()}</TableCell>
-                                            <TableCell>{(p.status || 'PENDING').toString()}</TableCell>
-                                            <TableCell>
-                                              <div className="flex space-x-2">
-                                                <Button size="sm" onClick={() => handlePaymentUpdate(p.id, 'IN_PROGRESS')}>Mark In Progress</Button>
-                                                <Button size="sm" style={{ backgroundColor: '#33A852' }} className="text-white" onClick={() => handlePaymentUpdate(p.id, 'COMPLETED')}>Mark Completed</Button>
-                                              </div>
-                                            </TableCell>
-                                          </TableRow>
-                                        ))}
-                                      </TableBody>
-                                    </Table>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
+                        <Button size="sm" variant="outline" onClick={() => handleOpenLoadManage(load)}>
+                          Manage
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
