@@ -31,14 +31,14 @@ export default function TransporterPortal() {
     return {
       id: authUser.id,
       email: authUser.email,
-      userType: authUser.userType.toUpperCase() as 'ADMIN' | 'CLIENT' | 'TRANSPORTER',
-      status: authUser.status.toUpperCase() as 'ACTIVE' | 'PENDING' | 'REJECTED' | 'SUSPENDED',
-      companyName: authUser.profile.companyName,
-      contactPerson: authUser.profile.contactPerson,
-      phone: authUser.profile.phone,
-      address: authUser.profile.address,
-      businessRegistration: authUser.profile.businessRegistration,
-      taxId: authUser.profile.taxId,
+      userType: (authUser.userType || 'TRANSPORTER').toString().toUpperCase() as 'ADMIN' | 'CLIENT' | 'TRANSPORTER',
+      status: (authUser.status || 'ACTIVE').toString().toUpperCase() as 'ACTIVE' | 'PENDING' | 'REJECTED' | 'SUSPENDED',
+      companyName: (authUser.profile?.companyName || ''),
+      contactPerson: (authUser.profile?.contactPerson || ''),
+      phone: (authUser.profile?.phone || ''),
+      address: (authUser.profile?.address || ''),
+      businessRegistration: authUser.profile?.businessRegistration,
+      taxId: authUser.profile?.taxId,
       createdAt: authUser.createdAt,
       lastLogin: authUser.lastLogin
     };
@@ -277,7 +277,10 @@ export default function TransporterPortal() {
         api.loads.getAll({ page: 1, limit: 20 }),
         api.messages.getUnreadCount(),
         api.bids.getAll({ page: 1, limit: 30 }),
-        api.messages.getAll({ page: 1, limit: 50 }),
+        api.messages.getConversation(currentUser.id).catch(err => {
+          console.debug('Messages fetch failed (non-blocking):', err?.response?.status || err?.message);
+          return { messages: [] };
+        }),
         currentUser?.id 
           ? api.documents.getByUser(currentUser.id, { page: 1, limit: 50 }).catch(err => {
               console.error('Failed to check transporter verification:', err);
@@ -418,7 +421,7 @@ export default function TransporterPortal() {
       setUnreadCount(unreadResponse.unreadCount || 0);
       
       // Update conversations unread count
-      const messagesData = await api.messages.getAll();
+  const messagesData = await api.messages.getConversation(user.id);
       const userMessages = messagesData.messages || [];
       
       const transporterMessages = userMessages.filter(msg => 

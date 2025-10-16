@@ -110,26 +110,37 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
     websocketService.connect();
 
     // Listen for new bids
-    const handleNewBid = (data: any) => {
+    const handleNewBid = async (data: any) => {
       console.log('🔔 [CLIENT] New bid received via WebSocket:', data);
-      // Refresh bids to show the new bid
-      api.bids.getAll({ page: 1, limit: 20 }).then(bidsData => {
+      // Refresh bids scoped to this client's loads to avoid unsupported params
+      try {
+        const currentLoads = loads.length > 0 ? loads : (await api.loads.getAll({ clientId: user.id, page: 1, limit: 10 })).loads || [];
+        const perLoadBidsPromises = (currentLoads || []).map((l) =>
+          api.bids.getByLoad(l.id).catch(() => ({ bids: [] }))
+        );
+        const perLoadResults = await Promise.all(perLoadBidsPromises);
+        const merged = perLoadResults.flatMap((r: any) => r.bids || r || []);
+        setBids(merged);
         console.log('✅ [CLIENT] Bids refreshed after new bid');
-        setBids(bidsData.bids || []);
-      }).catch(error => {
-        console.error('❌ [CLIENT] Failed to refresh bids after new bid:', error);
-      });
+      } catch (error) {
+        console.debug('❌ [CLIENT] Failed to refresh bids after new bid (non-blocking):', (error as any)?.response?.status || (error as any)?.message);
+      }
     };
 
     // Listen for bid status changes
-    const handleBidStatusChanged = (data: any) => {
+    const handleBidStatusChanged = async (data: any) => {
       console.log('🔔 Bid status changed:', data);
-      // Refresh bids to show updated status
-      api.bids.getAll({ page: 1, limit: 20 }).then(bidsData => {
-        setBids(bidsData.bids || []);
-      }).catch(error => {
-        console.error('Failed to refresh bids after status change:', error);
-      });
+      try {
+        const currentLoads = loads.length > 0 ? loads : (await api.loads.getAll({ clientId: user.id, page: 1, limit: 10 })).loads || [];
+        const perLoadBidsPromises = (currentLoads || []).map((l) =>
+          api.bids.getByLoad(l.id).catch(() => ({ bids: [] }))
+        );
+        const perLoadResults = await Promise.all(perLoadBidsPromises);
+        const merged = perLoadResults.flatMap((r: any) => r.bids || r || []);
+        setBids(merged);
+      } catch (error) {
+        console.debug('Failed to refresh bids after status change (non-blocking):', (error as any)?.response?.status || (error as any)?.message);
+      }
     };
 
     // Listen for document uploads
@@ -243,21 +254,27 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
       // Phase 2: Load secondary data in background (bids, messages, docs)
       console.log('Loading secondary client data in background...');
-      const [bidsResponse, messagesResponse] = await Promise.all([
-        api.bids.getAll({ page: 1, limit: 200 }).catch(err => {
-          console.warn('Bids fetch failed (non-blocking):', err?.response?.status || err?.message);
-          return { bids: [], pagination: { page: 1, pages: 1 } };
-        }),
-        api.messages.getAll({ page: 1, limit: 200 }).catch(err => {
-          console.warn('Messages fetch failed (non-blocking):', err?.response?.status || err?.message);
+      // Fetch bids per load (avoids backend 400 for unsupported pagination)
+      const perLoadBidsPromises = (loadsResponse.loads || []).map((l: Load) =>
+        api.bids.getByLoad(l.id).catch(err => {
+          console.debug('Bids fetch for load failed (non-blocking):', err?.response?.status || err?.message);
+          return { bids: [] };
+        })
+      );
+      // Fetch messages via conversation API to scope to current user
+      const [perLoadResults, messagesResponse] = await Promise.all([
+        Promise.all(perLoadBidsPromises),
+        api.messages.getConversation(currentUser.id).catch(err => {
+          console.debug('Messages fetch failed (non-blocking):', err?.response?.status || err?.message);
           return { messages: [] };
         })
       ]);
 
       // Set bids with pagination info
-      setBids(bidsResponse.bids || []);
-      setBidsPage(1);
-      setHasMoreBids(bidsResponse.pagination?.page < bidsResponse.pagination?.pages);
+  const mergedBids = perLoadResults.flatMap((r: any) => r.bids || r || []);
+  setBids(mergedBids);
+  setBidsPage(1);
+  setHasMoreBids(false); // per-load fetch has no pagination context
 
       // Set messages and conversations
       const userMessages = messagesResponse.messages || [];
@@ -305,7 +322,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
         console.log('Document verification status for user:', approved);
       } catch (err: any) {
         if (!docWarnedRef.current) {
-          console.warn('Document verification check skipped:', err?.response?.status || err?.message);
+          console.info('Document verification check skipped (non-blocking):', err?.response?.status || err?.message);
           docWarnedRef.current = true;
         }
         setIsVerified(false);
@@ -329,7 +346,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
       setUnreadCount(unreadResponse.unreadCount || 0);
       
       // Update conversations unread count
-      const messagesData = await api.messages.getAll();
+  const messagesData = await api.messages.getConversation(user.id);
       const userMessages = messagesData.messages || [];
       
       // Group messages by conversation - CLIENT should only see TRANSPORTERS
