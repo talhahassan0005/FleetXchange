@@ -23,8 +23,13 @@ import ChatInterface from '@/components/ChatInterface';
 import LoadFinancials from '@/components/LoadFinancials';
 import { toast } from 'sonner';
 
-export default function TransporterPortal() {
-  const [user, setUser] = useState<User | null>(null);
+interface TransporterPortalProps {
+  user: User;
+  onLogout: () => void;
+}
+
+export default function TransporterPortal({ user: propUser, onLogout: propLogout }: TransporterPortalProps) {
+  const [user, setUser] = useState<User | null>(propUser);
 
   // Convert auth service user to API user format
   const convertToApiUser = (authUser: User): ApiUser => {
@@ -74,60 +79,19 @@ export default function TransporterPortal() {
 
   useEffect(() => {
     const init = async () => {
-      const currentUser = authService.getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
+      if (propUser) {
+        setUser(propUser);
         // Reset chat state on page load/refresh
         setSelectedClient(null);
         setShowChat(false);
         setChatLoad(null);
         // Start loading data immediately
-        await loadData(currentUser);
-        return;
+        await loadData(propUser);
       }
-
-      // No cached user — check if token exists and fetch profile
-      const token = authService.getToken();
-      if (token) {
-        try {
-          // ensure axios has token header
-          setAuthToken(token);
-          const resp = await api.auth.getProfile();
-          const apiUser: ApiUser = resp.user;
-          const legacy = convertToApiUser as any; // noop to satisfy ts if needed
-          // convert api user to legacy format used by authService
-          const converted: User = {
-            id: apiUser.id,
-            email: apiUser.email,
-            userType: apiUser.userType.toLowerCase() as 'admin' | 'client' | 'transporter',
-            status: apiUser.status.toLowerCase() as 'active' | 'pending' | 'rejected' | 'suspended',
-            profile: {
-              companyName: apiUser.companyName || '',
-              contactPerson: apiUser.contactPerson || '',
-              phone: apiUser.phone || '',
-              address: apiUser.address || '',
-              businessRegistration: apiUser.businessRegistration,
-              taxId: apiUser.taxId
-            },
-            createdAt: apiUser.createdAt,
-            lastLogin: apiUser.lastLogin
-          };
-
-          // store and use
-          setUser(converted);
-          try { localStorage.setItem('fleetxchange_user', JSON.stringify(converted)); } catch (e) {}
-          await loadData(converted);
-          return;
-        } catch (err) {
-          console.error('Failed to restore user from token:', err);
-        }
-      }
-
-      setIsLoading(false);
     };
 
     init();
-  }, []);
+  }, [propUser]);
 
   // WebSocket real-time updates
   useEffect(() => {
@@ -377,8 +341,7 @@ export default function TransporterPortal() {
   const handleLogout = () => {
     // Clear localStorage on logout
     localStorage.removeItem('transporterPortalActiveTab');
-    authService.logout();
-    navigate('/login');
+    propLogout();
   };
 
   const openChat = async (load: Load) => {
@@ -752,30 +715,7 @@ export default function TransporterPortal() {
     { id: 'messages', label: 'Messages', icon: MessageSquare, badge: unreadCount > 0 ? unreadCount : undefined }
   ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading transporter portal...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading screen while data is being fetched
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Loading transporter data...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If not loading and no user, redirect to login to avoid blank screen on refresh
+  // If no user, redirect to login to avoid blank screen on refresh
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -849,6 +789,15 @@ export default function TransporterPortal() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-gray-600">Loading transporter data...</p>
+            </div>
+          </div>
+        ) : (
+          <>
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Stats Cards */}
@@ -1529,6 +1478,8 @@ export default function TransporterPortal() {
               )}
             </CardContent>
           </Card>
+        )}
+        </>
         )}
       </main>
 

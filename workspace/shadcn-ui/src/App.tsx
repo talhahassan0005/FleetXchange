@@ -125,7 +125,7 @@ const App = () => {
                   ) : currentUser.userType === 'client' ? (
                     <ClientPortal user={currentUser} onLogout={handleLogout} />
                   ) : (
-                    <TransporterPortal />
+                    <TransporterPortal user={currentUser} onLogout={handleLogout} />
                   )
                 ) : (
                   <Navigate to="/login" replace />

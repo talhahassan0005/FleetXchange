@@ -754,17 +754,6 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
   if (!propUser) return null;
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading client portal...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header with Top Navigation - EXACT MATCH TO ADMIN PORTAL */}
@@ -838,6 +827,15 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-gray-600">Loading client data...</p>
+            </div>
+          </div>
+        ) : (
+          <>
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Stats Cards - Dynamic Data */}
@@ -1752,6 +1750,8 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
               )}
             </CardContent>
           </Card>
+        )}
+        </>
         )}
       </main>
     </div>
