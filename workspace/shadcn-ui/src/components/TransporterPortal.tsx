@@ -327,7 +327,7 @@ export default function TransporterPortal() {
         
         // TRANSPORTER (logged in user) should only see CLIENT conversations
         // Skip if other user is not a CLIENT
-        if (currentUser.userType === 'TRANSPORTER' && otherUserType !== 'CLIENT') {
+        if (currentUser.userType.toUpperCase() === 'TRANSPORTER' && otherUserType !== 'CLIENT') {
           return; // Skip this message
         }
         
@@ -436,7 +436,7 @@ export default function TransporterPortal() {
         
         // TRANSPORTER (logged in user) should only see CLIENT conversations
         // Skip if other user is not a CLIENT
-        if (user.userType === 'TRANSPORTER' && otherUserType !== 'CLIENT') {
+        if (user.userType.toUpperCase() === 'TRANSPORTER' && otherUserType !== 'CLIENT') {
           return; // Skip this message
         }
         
@@ -752,21 +752,7 @@ export default function TransporterPortal() {
     { id: 'messages', label: 'Messages', icon: MessageSquare, badge: unreadCount > 0 ? unreadCount : undefined }
   ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading transporter portal...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If not loading and no user, redirect to login to avoid blank screen on refresh
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  // Render header and skeleton while loading as in Admin/Client to prevent flicker/redirect loop
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -1101,7 +1087,7 @@ export default function TransporterPortal() {
                                 <div className="p-4 bg-gray-50 rounded-lg border">
                                   <h4 className="font-medium mb-2" style={{ color: '#0A1C3F' }}>Load Details</h4>
                                   <div className="text-sm space-y-1" style={{ color: '#6E6E6E' }}>
-                                    <p><strong>Route:</strong> {load.pickupLocation} → {load.deliveryLocation}</p>
+                                    <p><strong>Route:</strong> {(load as any)?.pickupLocation || '—'} → {(load as any)?.deliveryLocation || '—'}</p>
                                     <p><strong>Cargo:</strong> {load.cargoType} ({load.weight} tons)</p>
                                     <p><strong>Budget:</strong> {load.currency || 'USD'} {load.budgetMin.toLocaleString()} - {load.currency || 'USD'} {load.budgetMax.toLocaleString()}</p>
                                     <p><strong>Pickup Date:</strong> {load.pickupDate ? new Date(load.pickupDate).toLocaleDateString() : '—'}</p>
@@ -1231,7 +1217,7 @@ export default function TransporterPortal() {
                 </TableHeader>
                 <TableBody>
                   {myBids.map((bid) => {
-                    const load = bid?.load || loads.find(l => l.id === bid?.loadId) || (bid?.loadId ? bidLoads[bid.loadId] : undefined);
+                    const load = (bid?.load as any) || loads.find(l => l.id === bid?.loadId) || (bid?.loadId ? (bidLoads as any)[bid.loadId] : undefined);
                     const fallbackId = typeof bid?.loadId === 'string' ? bid.loadId.slice(-4) : '—';
                     const title = load?.title || `Load #${fallbackId}`;
                     const amount = typeof bid?.amount === 'number' ? bid.amount : 0;
@@ -1243,9 +1229,9 @@ export default function TransporterPortal() {
                         <TableCell>
                           <div>
                             <div className="font-medium">{title}</div>
-                            {load && (
+                            {load && (load as any).pickupLocation && (load as any).deliveryLocation && (
                               <div className="text-sm" style={{ color: '#6E6E6E' }}>
-                                {load.pickupLocation} → {load.deliveryLocation}
+                                {(load as any).pickupLocation} → {(load as any).deliveryLocation}
                               </div>
                             )}
                           </div>

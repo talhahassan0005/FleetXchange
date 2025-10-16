@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,6 +84,8 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
   const [selectedTransporter, setSelectedTransporter] = useState<any>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
+  // prevent noisy repeated console logs for document 403s
+  const docWarnedRef = useRef(false);
 
   useEffect(() => {
     console.log('ClientPortal useEffect running...');
@@ -224,46 +226,44 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
     try {
       // Always show loading on initial data load
       setIsLoading(true);
-      
-      // Load ALL data in parallel for faster loading (like AdminPortal)
-      console.log('Loading all client data in parallel...');
-      const [loadsResponse, unreadResponse, bidsResponse, messagesResponse, docsResponse] = await Promise.all([
+
+      // Phase 1: Load essential data first for faster first paint
+      console.log('Loading essential client data (parallel)...');
+      const [loadsResponse, unreadResponse] = await Promise.all([
         api.loads.getAll({ clientId: currentUser.id, page: 1, limit: 10 }),
-        api.messages.getUnreadCount(),
-        api.bids.getAll({ page: 1, limit: 20 }),
-        api.messages.getAll({ page: 1, limit: 50 }),
-        api.documents.getByUser(currentUser.id, { page: 1, limit: 50 }).catch(err => {
-          console.error('Failed to check document verification status:', err);
-          return [];
-        })
+        api.messages.getUnreadCount()
       ]);
-      
-      console.log('All client data loaded successfully');
-      
-      // Set loads immediately with pagination info
+
+      // Apply essential state and render UI early
       setLoads(loadsResponse.loads || []);
       setLoadsPage(1);
       setHasMoreLoads(loadsResponse.pagination?.page < loadsResponse.pagination?.pages);
       setUnreadCount(unreadResponse.unreadCount || 0);
+      setIsLoading(false);
 
-      // Check document verification status for posting loads
-      const docs = Array.isArray(docsResponse) ? docsResponse : [];
-      const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
-      setIsVerified(approved);
-      console.log('Document verification status for user:', approved);
-      
-      console.log('Secondary data loaded');
-      
+      // Phase 2: Load secondary data in background (bids, messages, docs)
+      console.log('Loading secondary client data in background...');
+      const [bidsResponse, messagesResponse] = await Promise.all([
+        api.bids.getAll({ page: 1, limit: 20 }).catch(err => {
+          console.warn('Bids fetch failed (non-blocking):', err?.response?.status || err?.message);
+          return { bids: [], pagination: { page: 1, pages: 1 } };
+        }),
+        api.messages.getAll({ page: 1, limit: 50 }).catch(err => {
+          console.warn('Messages fetch failed (non-blocking):', err?.response?.status || err?.message);
+          return { messages: [] };
+        })
+      ]);
+
       // Set bids with pagination info
       setBids(bidsResponse.bids || []);
       setBidsPage(1);
       setHasMoreBids(bidsResponse.pagination?.page < bidsResponse.pagination?.pages);
-      
+
       // Set messages and conversations
       const userMessages = messagesResponse.messages || [];
       setMessages(userMessages);
       
-      // Group messages by conversation (transporter only - single conversation per transporter)
+  // Group messages by conversation (transporter only - single conversation per transporter)
       const conversationMap = new Map();
       userMessages.forEach(message => {
         // Use only transporter ID as key for single conversation per transporter (ignore loadId)
@@ -297,12 +297,27 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
         .sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
       setConversations(conversationsArray);
       
-      console.log('✅ All data loaded successfully with lazy loading');
+      // Background: check document verification status (non-blocking) with quiet logging
+      try {
+        const docs = await api.documents
+          .getByUser(currentUser.id, { page: 1, limit: 50 });
+        const approved = Array.isArray(docs) && docs.some((d: any) => d.verificationStatus === 'APPROVED');
+        setIsVerified(approved);
+        console.log('Document verification status for user:', approved);
+      } catch (err: any) {
+        if (!docWarnedRef.current) {
+          console.warn('Document verification check skipped:', err?.response?.status || err?.message);
+          docWarnedRef.current = true;
+        }
+        setIsVerified(false);
+      }
+
+      console.log('✅ All data loaded successfully with staged loading');
     } catch (error) {
       console.error('Failed to load data:', error);
       alert('Failed to load data. Please refresh the page.');
     } finally {
-      setIsLoading(false);
+      // isLoading is already set to false after phase 1; keep it non-blocking here
     }
   };
 
@@ -329,7 +344,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
         
         // CLIENT (logged in user) should only see TRANSPORTER conversations
         // Skip if other user is not a TRANSPORTER
-        if (user.userType === 'CLIENT' && otherUserType !== 'TRANSPORTER') {
+        if (user.userType.toUpperCase() === 'CLIENT' && otherUserType !== 'TRANSPORTER') {
           return; // Skip this message
         }
         

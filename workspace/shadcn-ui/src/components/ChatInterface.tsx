@@ -10,7 +10,7 @@ import { websocketService } from '../lib/websocket';
 
 interface ChatInterfaceProps {
   loadId: string;
-  load: Load;
+  load: Load | null; // allow null when opening from conversation list
   currentUser: UserType;
   onBack: () => void;
   bids: Bid[];
@@ -178,11 +178,15 @@ export default function ChatInterface({ loadId, load, currentUser, onBack, bids,
       let receiverId: string;
       
       if (currentUser.userType === 'TRANSPORTER') {
-        // Transporter sending to client
-        receiverId = load.clientId;
+        // Transporter sending to client requires load context for clientId
+        if (load && load.clientId) {
+          receiverId = load.clientId;
+        } else {
+          throw new Error('Missing load context. Open chat from a specific load.');
+        }
       } else if (currentUser.userType === 'CLIENT') {
         // Client sending to transporter - check assignedTransporterId first, then bids
-        if (load.assignedTransporterId) {
+        if (load && load.assignedTransporterId) {
           receiverId = load.assignedTransporterId;
         } else {
           // If no transporter assigned, find the transporter who bid on this load
@@ -298,11 +302,12 @@ export default function ChatInterface({ loadId, load, currentUser, onBack, bids,
   };
 
   const getOtherUser = () => {
+    if (!load) return undefined as any;
     if (currentUser.userType === 'TRANSPORTER') {
-      return load.client;
+      return (load as any).client;
     } else {
       // Use assignedTransporter from API type
-      return load.assignedTransporter;
+      return (load as any).assignedTransporter;
     }
   };
 
@@ -329,13 +334,13 @@ export default function ChatInterface({ loadId, load, currentUser, onBack, bids,
                   Chat with {otherUser?.companyName || 'Client'}
                 </h2>
                 <p className="text-sm text-gray-500">
-                  Load: {load.title}
+                  Load: {load ? load.title : loadId}
                 </p>
               </div>
             </div>
           </div>
           <Badge variant="outline" className="text-xs">
-            {load.status}
+            {load?.status || 'ACTIVE'}
           </Badge>
         </div>
       </div>
