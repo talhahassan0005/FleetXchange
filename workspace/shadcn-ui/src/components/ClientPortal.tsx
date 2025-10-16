@@ -244,11 +244,11 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
       // Phase 2: Load secondary data in background (bids, messages, docs)
       console.log('Loading secondary client data in background...');
       const [bidsResponse, messagesResponse] = await Promise.all([
-        api.bids.getAll({ page: 1, limit: 20 }).catch(err => {
+        api.bids.getAll({ page: 1, limit: 200 }).catch(err => {
           console.warn('Bids fetch failed (non-blocking):', err?.response?.status || err?.message);
           return { bids: [], pagination: { page: 1, pages: 1 } };
         }),
-        api.messages.getAll({ page: 1, limit: 50 }).catch(err => {
+        api.messages.getAll({ page: 1, limit: 200 }).catch(err => {
           console.warn('Messages fetch failed (non-blocking):', err?.response?.status || err?.message);
           return { messages: [] };
         })
@@ -263,32 +263,31 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
       const userMessages = messagesResponse.messages || [];
       setMessages(userMessages);
       
-  // Group messages by conversation (transporter only - single conversation per transporter)
+      // Group messages by transporter+load to surface chat loads in client messages
       const conversationMap = new Map();
       userMessages.forEach(message => {
-        // Use only transporter ID as key for single conversation per transporter (ignore loadId)
-        const transporterId = message.senderId === currentUser.id ? message.receiverId : message.senderId;
-        const transporterName = message.senderId === currentUser.id ? message.receiver?.companyName : message.sender?.companyName;
-        
-        if (!conversationMap.has(transporterId)) {
-          conversationMap.set(transporterId, {
-            transporterId: transporterId,
-            transporterName: transporterName,
+        const otherId = message.senderId === currentUser.id ? message.receiverId : message.senderId;
+        const otherName = message.senderId === currentUser.id ? message.receiver?.companyName : message.sender?.companyName;
+        const key = `${otherId}:${message.loadId || 'general'}`;
+        if (!conversationMap.has(key)) {
+          conversationMap.set(key, {
+            transporterId: otherId,
+            transporterName: otherName,
+            loadId: message.loadId,
             lastMessage: message.message,
             lastMessageTime: message.createdAt,
             unreadCount: 0,
             messages: []
           });
         }
-        const conversation = conversationMap.get(transporterId);
-        conversation.messages.push(message);
+        const conv = conversationMap.get(key);
+        conv.messages.push(message);
         if (message.receiverId === currentUser.id && !message.isRead) {
-          conversation.unreadCount++;
+          conv.unreadCount++;
         }
-        // Update last message if this is newer
-        if (new Date(message.createdAt) > new Date(conversation.lastMessageTime)) {
-          conversation.lastMessage = message.message;
-          conversation.lastMessageTime = message.createdAt;
+        if (new Date(message.createdAt) > new Date(conv.lastMessageTime)) {
+          conv.lastMessage = message.message;
+          conv.lastMessageTime = message.createdAt;
         }
       });
       

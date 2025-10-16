@@ -9,7 +9,7 @@ import { Loader2, CheckCircle, Truck, Shield, MapPin, ArrowRight } from 'lucide-
 import { authService, User } from '@/lib/auth';
 
 interface LoginProps {
-  onLogin: (user: User, callback?: () => void) => void;
+  onLogin: (user: User) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
@@ -55,15 +55,12 @@ export default function Login({ onLogin }: LoginProps) {
         console.log('User type:', user.userType);
         console.log('User status:', user.status);
         console.log('Calling onLogin callback...');
-        
-        // Call the onLogin callback with navigation as callback
-        // Navigate to specific portal route to avoid race condition
-        onLogin(user, () => {
-          console.log('🔄 Navigating to portal...');
-          const portalRoute = user.userType === 'admin' ? '/admin' : 
-                            user.userType === 'client' ? '/client' : '/transporter';
-          navigate(portalRoute, { replace: true });
-        });
+        onLogin(user);
+        // Navigate to portal based on role (no reload)
+        console.log('🔄 Navigating to portal...');
+        const portalRoute = user.userType === 'admin' ? '/admin' : 
+                          user.userType === 'client' ? '/client' : '/transporter';
+        navigate(portalRoute, { replace: true });
       } else {
         console.log('❌ Login failed: Invalid credentials');
         setError('Invalid email or password. Please check your credentials and try again.');
