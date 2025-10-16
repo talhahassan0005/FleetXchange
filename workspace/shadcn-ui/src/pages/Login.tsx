@@ -9,7 +9,7 @@ import { Loader2, CheckCircle, Truck, Shield, MapPin, ArrowRight } from 'lucide-
 import { authService, User } from '@/lib/auth';
 
 interface LoginProps {
-  onLogin: (user: User) => void;
+  onLogin: (user: User, callback?: () => void) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
@@ -56,16 +56,12 @@ export default function Login({ onLogin }: LoginProps) {
         console.log('User status:', user.status);
         console.log('Calling onLogin callback...');
         
-        // Call the onLogin callback to update App state
-        onLogin(user);
-        
-        // Small delay to ensure state is updated before navigation
-        // This prevents the race condition where currentUser is still null
-        console.log('⏱️ Waiting for state update...');
-        setTimeout(() => {
+        // Call the onLogin callback with navigation as callback
+        // This ensures navigation happens after state is fully updated
+        onLogin(user, () => {
           console.log('🔄 Navigating to dashboard...');
           navigate('/dashboard', { replace: true });
-        }, 100);
+        });
       } else {
         console.log('❌ Login failed: Invalid credentials');
         setError('Invalid email or password. Please check your credentials and try again.');

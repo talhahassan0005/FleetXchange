@@ -827,6 +827,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Show loading screen while data is being fetched */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
@@ -1751,7 +1752,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
             </CardContent>
           </Card>
         )}
-        </>
+          </>
         )}
       </main>
     </div>

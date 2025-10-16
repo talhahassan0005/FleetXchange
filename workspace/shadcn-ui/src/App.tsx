@@ -70,7 +70,7 @@ const App = () => {
     init();
   }, []);
 
-  const handleLogin = (user: User) => {
+  const handleLogin = (user: User, callback?: () => void) => {
     console.log('🔄 App: Setting current user:', user);
     setCurrentUser(user);
     // Store in localStorage immediately to ensure persistence
@@ -78,6 +78,11 @@ const App = () => {
       localStorage.setItem('fleetxchange_user', JSON.stringify(user));
     } catch (err) {
       console.error('Failed to save user to localStorage:', err);
+    }
+    // Execute callback after state update if provided
+    if (callback) {
+      // Use setTimeout to ensure state has been processed
+      setTimeout(callback, 0);
     }
   };
 
@@ -125,7 +130,7 @@ const App = () => {
                   ) : currentUser.userType === 'client' ? (
                     <ClientPortal user={currentUser} onLogout={handleLogout} />
                   ) : (
-                    <TransporterPortal user={currentUser} onLogout={handleLogout} />
+                    <TransporterPortal />
                   )
                 ) : (
                   <Navigate to="/login" replace />
