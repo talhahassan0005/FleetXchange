@@ -111,7 +111,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
     // Listen for new bids
     const handleNewBid = async (data: any) => {
-      console.log('🔔 [CLIENT] New bid received via WebSocket:', data);
+      console.log(' [CLIENT] New bid received via WebSocket:', data);
       // Refresh bids scoped to this client's loads to avoid unsupported params
       try {
         const currentLoads = loads.length > 0 ? loads : (await api.loads.getAll({ clientId: user.id, page: 1, limit: 10 })).loads || [];
@@ -129,7 +129,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
     // Listen for bid status changes
     const handleBidStatusChanged = async (data: any) => {
-      console.log('🔔 Bid status changed:', data);
+      console.log(' Bid status changed:', data);
       try {
         const currentLoads = loads.length > 0 ? loads : (await api.loads.getAll({ clientId: user.id, page: 1, limit: 10 })).loads || [];
         const perLoadBidsPromises = (currentLoads || []).map((l) =>
@@ -149,19 +149,19 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
       // Signal DocumentUpload component to refresh (non-invasive)
       try {
         window.dispatchEvent(new CustomEvent('documents:refresh'));
-        console.log('✅ [CLIENT] Dispatched documents:refresh event');
+        console.log(' [CLIENT] Dispatched documents:refresh event');
       } catch (err) {
-        console.error('❌ [CLIENT] Failed to dispatch documents:refresh event', err);
+        console.error(' [CLIENT] Failed to dispatch documents:refresh event', err);
       }
     };
 
     // Listen for document verification updates
     const handleDocumentVerified = (data: any) => {
-      console.log('🔔 [CLIENT] Document verified via WebSocket:', data);
+      console.log(' [CLIENT] Document verified via WebSocket:', data);
       // Signal DocumentUpload component to refresh (non-invasive)
       try {
         window.dispatchEvent(new CustomEvent('documents:refresh'));
-        console.log('✅ Dispatched documents:refresh event after verification');
+        console.log(' Dispatched documents:refresh event after verification');
       } catch (err) {
         console.error('Failed to dispatch documents:refresh event after verification:', err);
       }
@@ -169,7 +169,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
 
     // Incoming new message handler
     const handleNewMessage = (data: any) => {
-      console.log('🔔 [CLIENT] New message via WebSocket:', data);
+      console.log(' [CLIENT] New message via WebSocket:', data);
       if (data && data.receiverId === user?.id) {
         setUnreadCount(prev => (prev || 0) + 1);
       }
@@ -178,7 +178,7 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
     };
 
     const handleMessageSent = (data: any) => {
-      console.log('🔔 [CLIENT] Message sent confirmation via WebSocket:', data);
+      console.log(' [CLIENT] Message sent confirmation via WebSocket:', data);
       // Refresh conversations so sent message appears immediately
       refreshUnreadCountAndConversations();
     };

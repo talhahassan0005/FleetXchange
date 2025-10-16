@@ -775,7 +775,7 @@ export default function TransporterPortal() {
                 <h1 className="text-2xl font-bold" style={{ color: '#0A1C3F' }}>
                   FleetXchange Transporter
                 </h1>
-                <p className="text-sm" style={{ color: '#6E6E6E' }}>{user.profile.companyName}</p>
+                <p className="text-sm" style={{ color: '#6E6E6E' }}>{user?.profile?.companyName || user?.email || 'Transporter'}</p>
               </div>
             </div>
             <Button 
