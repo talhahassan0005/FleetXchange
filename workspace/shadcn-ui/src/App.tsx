@@ -71,7 +71,14 @@ const App = () => {
   }, []);
 
   const handleLogin = (user: User) => {
+    console.log('🔄 App: Setting current user:', user);
     setCurrentUser(user);
+    // Store in localStorage immediately to ensure persistence
+    try {
+      localStorage.setItem('fleetxchange_user', JSON.stringify(user));
+    } catch (err) {
+      console.error('Failed to save user to localStorage:', err);
+    }
   };
 
   const handleLogout = () => {

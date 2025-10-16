@@ -59,9 +59,13 @@ export default function Login({ onLogin }: LoginProps) {
         // Call the onLogin callback to update App state
         onLogin(user);
         
-        // Navigate to dashboard - no reload needed, React Router handles this
-        console.log('🔄 Navigating to dashboard...');
-        navigate('/dashboard', { replace: true });
+        // Small delay to ensure state is updated before navigation
+        // This prevents the race condition where currentUser is still null
+        console.log('⏱️ Waiting for state update...');
+        setTimeout(() => {
+          console.log('🔄 Navigating to dashboard...');
+          navigate('/dashboard', { replace: true });
+        }, 100);
       } else {
         console.log('❌ Login failed: Invalid credentials');
         setError('Invalid email or password. Please check your credentials and try again.');
