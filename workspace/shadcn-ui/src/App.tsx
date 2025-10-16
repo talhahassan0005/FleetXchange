@@ -3,6 +3,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import { authService, User } from '@/lib/auth';
 import { api, setAuthToken, User as ApiUser } from '@/lib/api';
 import Login from './pages/Login';
@@ -72,7 +73,11 @@ const App = () => {
 
   const handleLogin = (user: User, callback?: () => void) => {
     console.log('🔄 App: Setting current user:', user);
-    setCurrentUser(user);
+    // Use flushSync to force synchronous state update
+    // This ensures currentUser is updated before navigation happens
+    flushSync(() => {
+      setCurrentUser(user);
+    });
     // Store in localStorage immediately to ensure persistence
     try {
       localStorage.setItem('fleetxchange_user', JSON.stringify(user));
@@ -81,8 +86,7 @@ const App = () => {
     }
     // Execute callback after state update if provided
     if (callback) {
-      // Use setTimeout to ensure state has been processed
-      setTimeout(callback, 0);
+      callback();
     }
   };
 

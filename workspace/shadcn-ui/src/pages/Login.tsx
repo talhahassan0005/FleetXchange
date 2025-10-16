@@ -57,10 +57,12 @@ export default function Login({ onLogin }: LoginProps) {
         console.log('Calling onLogin callback...');
         
         // Call the onLogin callback with navigation as callback
-        // This ensures navigation happens after state is fully updated
+        // Navigate to specific portal route to avoid race condition
         onLogin(user, () => {
-          console.log('🔄 Navigating to dashboard...');
-          navigate('/dashboard', { replace: true });
+          console.log('🔄 Navigating to portal...');
+          const portalRoute = user.userType === 'admin' ? '/admin' : 
+                            user.userType === 'client' ? '/client' : '/transporter';
+          navigate(portalRoute, { replace: true });
         });
       } else {
         console.log('❌ Login failed: Invalid credentials');
