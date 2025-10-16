@@ -77,6 +77,13 @@ export default function TransporterPortal() {
       const currentUser = authService.getCurrentUser();
       if (currentUser) {
         setUser(currentUser);
+        // Initialize optimistic verification from stored flag or ACTIVE status
+        try {
+          const stored = localStorage.getItem('transporter_verified');
+          if (stored === 'true' || (currentUser.status && currentUser.status.toLowerCase() === 'active')) {
+            setIsVerified(true);
+          }
+        } catch {}
         // Reset chat state on page load/refresh
         setSelectedClient(null);
         setShowChat(false);
@@ -305,12 +312,17 @@ export default function TransporterPortal() {
       // Check document verification status for transporter
       if (!currentUser?.id) {
         console.warn('Current user id not available for verification check');
-        setIsVerified(false);
+        // do not force false; keep whatever optimistic state we had
       } else {
         const docs = Array.isArray(docsResponse) ? docsResponse : [];
-        const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
-        setIsVerified(approved);
-        console.log('Transporter verification status:', approved);
+        const approved = docs.some((d: any) => (d.verificationStatus || '').toString().toUpperCase() === 'APPROVED');
+        const activeStatus = (currentUser.status || '').toString().toLowerCase() === 'active';
+        const verified = approved || activeStatus;
+        setIsVerified(verified);
+        if (verified) {
+          try { localStorage.setItem('transporter_verified', 'true'); } catch {}
+        }
+        console.log('Transporter verification status:', { approvedDocs: approved, activeStatus, verified });
       }
       
       // Group messages by conversation (client only - single conversation per client)

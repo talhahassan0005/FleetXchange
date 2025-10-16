@@ -154,8 +154,12 @@ const App = () => {
             <Route 
               path="/client" 
               element={
-                currentUser?.userType === 'client' ? (
-                  <ClientPortal user={currentUser} onLogout={handleLogout} />
+                currentUser ? (
+                  currentUser.userType === 'client' ? (
+                    <ClientPortal user={currentUser} onLogout={handleLogout} />
+                  ) : (
+                    <Navigate to={currentUser.userType === 'admin' ? '/admin' : '/transporter'} replace />
+                  )
                 ) : (
                   <Login onLogin={handleLogin} />
                 )
@@ -164,8 +168,12 @@ const App = () => {
             <Route 
               path="/transporter" 
               element={
-                currentUser?.userType === 'transporter' ? (
-                  <TransporterPortal />
+                currentUser ? (
+                  currentUser.userType === 'transporter' ? (
+                    <TransporterPortal />
+                  ) : (
+                    <Navigate to={currentUser.userType === 'admin' ? '/admin' : '/client'} replace />
+                  )
                 ) : (
                   <Login onLogin={handleLogin} />
                 )
