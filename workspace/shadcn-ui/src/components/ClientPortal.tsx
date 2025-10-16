@@ -225,40 +225,32 @@ export default function ClientPortal({ user: propUser, onLogout }: ClientPortalP
       // Always show loading on initial data load
       setIsLoading(true);
       
-      // Load essential data first (loads + unread count)
-      console.log('Loading essential data first...');
-      const [loadsResponse, unreadResponse] = await Promise.all([
+      // Load ALL data in parallel for faster loading (like AdminPortal)
+      console.log('Loading all client data in parallel...');
+      const [loadsResponse, unreadResponse, bidsResponse, messagesResponse, docsResponse] = await Promise.all([
         api.loads.getAll({ clientId: currentUser.id, page: 1, limit: 10 }),
-        api.messages.getUnreadCount()
+        api.messages.getUnreadCount(),
+        api.bids.getAll({ page: 1, limit: 20 }),
+        api.messages.getAll({ page: 1, limit: 50 }),
+        api.documents.getByUser(currentUser.id, { page: 1, limit: 50 }).catch(err => {
+          console.error('Failed to check document verification status:', err);
+          return [];
+        })
       ]);
       
-      console.log('Essential data loaded');
+      console.log('All client data loaded successfully');
       
       // Set loads immediately with pagination info
       setLoads(loadsResponse.loads || []);
       setLoadsPage(1);
       setHasMoreLoads(loadsResponse.pagination?.page < loadsResponse.pagination?.pages);
       setUnreadCount(unreadResponse.unreadCount || 0);
-      
-      // Load secondary data in background (bids + messages)
-      console.log('Loading secondary data in background...');
-      const [bidsResponse, messagesResponse] = await Promise.all([
-        api.bids.getAll({ page: 1, limit: 20 }),
-        api.messages.getAll({ page: 1, limit: 50 })
-      ]);
 
       // Check document verification status for posting loads
-      try {
-        const docsResponse = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
-        // API returns response.data.documents, so docsResponse is already the array
-        const docs = Array.isArray(docsResponse) ? docsResponse : [];
-        const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
-        setIsVerified(approved);
-        console.log('Document verification status for user:', approved);
-      } catch (err) {
-        console.error('Failed to check document verification status:', err);
-        setIsVerified(false);
-      }
+      const docs = Array.isArray(docsResponse) ? docsResponse : [];
+      const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
+      setIsVerified(approved);
+      console.log('Document verification status for user:', approved);
       
       console.log('Secondary data loaded');
       

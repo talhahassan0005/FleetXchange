@@ -271,52 +271,43 @@ export default function TransporterPortal() {
       // Always show loading on initial data load
       setIsLoading(true);
       
-      // Load essential data first (active loads + unread count)
-      console.log('Loading essential transporter data first...');
-      const [loadsData, unreadResponse] = await Promise.all([
+      // Load ALL data in parallel for faster loading (like AdminPortal)
+      console.log('Loading all transporter data in parallel...');
+      const [loadsData, unreadResponse, bidsData, messagesData, docsResponse] = await Promise.all([
         api.loads.getAll({ page: 1, limit: 20 }),
-        api.messages.getUnreadCount()
+        api.messages.getUnreadCount(),
+        api.bids.getAll({ page: 1, limit: 30 }),
+        api.messages.getAll({ page: 1, limit: 50 }),
+        currentUser?.id 
+          ? api.documents.getByUser(currentUser.id, { page: 1, limit: 50 }).catch(err => {
+              console.error('Failed to check transporter verification:', err);
+              return [];
+            })
+          : Promise.resolve([])
       ]);
       
-      console.log('Essential transporter data loaded');
+      console.log('All transporter data loaded successfully');
       
-      // Set loads immediately (all loads, not just active ones - needed for chat functionality)
+      // Set loads (all loads, not just active ones - needed for chat functionality)
       setLoads(loadsData.loads || []);
       setUnreadCount(unreadResponse.unreadCount || 0);
-      
-      // Load secondary data in background (bids + messages)
-      console.log('Loading secondary transporter data in background...');
-      const [bidsData, messagesData] = await Promise.all([
-        api.bids.getAll({ page: 1, limit: 30 }),
-        api.messages.getAll({ page: 1, limit: 50 })
-      ]);
-      
-      console.log('Secondary transporter data loaded');
       
       // Set bids
       setMyBids(bidsData.bids.filter(bid => bid.transporterId === currentUser.id));
       
-      // Set messages and conversations (same as ClientPortal - no additional filtering)
+      // Set messages and conversations
       const userMessages = messagesData.messages || [];
       setMessages(userMessages);
 
       // Check document verification status for transporter
-      try {
-        // Use the currentUser parameter passed to loadData, not the state variable
-        if (!currentUser?.id) {
-          console.warn('Current user id not available for verification check');
-          setIsVerified(false);
-        } else {
-          const docsResponse = await api.documents.getByUser(currentUser.id, { page: 1, limit: 50 });
-          // API returns response.data.documents, so docsResponse is already the array
-          const docs = Array.isArray(docsResponse) ? docsResponse : [];
-          const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
-          setIsVerified(approved);
-          console.log('Transporter verification status:', approved);
-        }
-      } catch (err) {
-        console.error('Failed to check transporter verification:', err);
+      if (!currentUser?.id) {
+        console.warn('Current user id not available for verification check');
         setIsVerified(false);
+      } else {
+        const docs = Array.isArray(docsResponse) ? docsResponse : [];
+        const approved = docs.some((d: any) => d.verificationStatus === 'APPROVED');
+        setIsVerified(approved);
+        console.log('Transporter verification status:', approved);
       }
       
       // Group messages by conversation (client only - single conversation per client)
